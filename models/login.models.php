@@ -19,7 +19,7 @@ class Login extends Dbh
     }
 
     $hashedPassword = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    $checkPassword = password_verify($password, $hashedPassword[0]["users_pwd"]);
+    $checkPassword = password_verify($password, $hashedPassword[0]["password"]);
     if(!$checkPassword) {
       $stmt = null;
       header("location: ../signup.php?error=wrongpassword");

@@ -1,27 +1,27 @@
 <?php
 class Signup extends Dbh
 {
-  protected function setUser($uid, $email, $password)
+  protected function setUser($name, $username, $password, $email, $title)
   {
-    $sql = "INSERT INTO users (users_uid, users_email, users_password) VALUES (?, ?, ?)";
+    $sql = "INSERT INTO users (name, username, password, email, title) VALUES (?, ?, ?, ?, ?)";
     $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
     $stmt = $this->connect()->prepare($sql);
-    if (!$stmt->execute([$uid, $email, $hashedPassword])) {
+    if (!$stmt->execute([$name, $username, $hashedPassword, $email, $title])) {
       $stmt = null;
-      header("location: ../signup.php?error=stmtfailed");
+      header("location: /index.php?page=task&error=stmtfailed");
       exit();
     }
 
     $stmt = null;
     // header("location: ../signup.php?error=none");
   }
-  protected function checkUser($uid, $email)
+  protected function checkUser($username, $email)
   {
-    $sql = "SELECT users_uid FROM users WHERE users_uid = ? OR users_email = ?";
+    $sql = "SELECT username FROM users WHERE username = ? OR email = ?";
     $stmt = $this->connect()->prepare($sql);
-    if (!$stmt->execute([$uid, $email])) {
+    if (!$stmt->execute([$username, $email])) {
       $stmt = null;
-      header("location: ../signup.php?error=stmtfailed");
+      header("location: /index.php?page=task&error=stmtfailed");
       exit();
     }
 

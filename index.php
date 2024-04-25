@@ -20,8 +20,14 @@ if (isset($_GET['page'])) {
     case 'users':
       include 'views/users.html';
       break;
+    case 'create-user':
+      include 'views/create-user.html';
+      break;
     case 'tasks':
       include 'views/tasks.html';
+      break;
+    case 'create-task':
+      include 'views/create-task.html';
       break;
     case 'task':
       include 'views/task.html';

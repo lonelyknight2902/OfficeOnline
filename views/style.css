@@ -128,28 +128,6 @@ table {
   border-spacing: 0;
 }
 
-nav {
-  padding: 2rem;
-}
-
-.sidebar {
-  height: 100vh;
-  /* width: 20%; */
-  padding: 1rem;
-  position: fixed;
-  z-index: 1;
-  top: 0;
-  left: 0;
-  overflow-x: hidden;
-  transition: 0.5s;
-  /* padding-top: 60px; */
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  border-right: 1px solid #ccc;
-  background-color: white;
-}
-
 .content {
   margin-left: 20%;
   padding: 4rem 0;
@@ -159,7 +137,7 @@ nav {
 }
 
 .sidebar a {
-  padding: 10px 15px;
+  padding: 15px 15px;
   text-decoration: none;
   font-size: 1.2rem;
   color: #034951;
@@ -171,16 +149,15 @@ nav {
 
 .sidebar li.active {
   background-color: #aedde550;
-  border-radius: 1rem;
 }
 
 .sidebar li:hover {
   background-color: #aedde550;
-  border-radius: 1rem;
 }
 
 .sidebar li {
   transition: background-color ease-in-out 0.2s;
+  border-radius: 0.5rem;
 }
 
 .sidebar ul {
@@ -217,7 +194,7 @@ body {
 .button {
   border-radius: 0.5rem;
   border: none;
-  padding: 10px 20px;
+  padding: 10px 15px;
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -227,4 +204,28 @@ body {
 .button-primary {
   background-color: #034951;
   color: white;
+}
+
+.button-secondary {
+  background-color: white;
+  color: #034951;
+  border: 1px solid #034951;
+}
+
+.sidebar {
+  height: 100vh;
+  /* width: 20%; */
+  padding: 1rem 2rem !important;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  overflow-x: hidden;
+  transition: 0.5s;
+  /* padding-top: 60px; */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-right: 1px solid #ccc;
+  background-color: white;
 }

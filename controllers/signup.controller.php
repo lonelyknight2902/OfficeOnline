@@ -2,57 +2,61 @@
 
 class SignupController extends Signup
 {
-  private $uid;
+  private $name;
+  private $username;
   private $password;
   private $passwordRepeat;
   private $email;
+  private $title;
 
-  public function __construct($uid, $password, $passwordRepeat, $email)
+  public function __construct($name, $username, $password, $passwordRepeat, $email, $title)
   {
-    $this->uid = $uid;
+    $this->name = $name;
+    $this->username = $username;
     $this->password = $password;
     $this->passwordRepeat = $passwordRepeat;
     $this->email = $email;
+    $this->title = $title;
   }
 
   public function signUpUser()
   {
     if ($this->emptyInput()) {
-      header("location: ../signup.php?error=emptyinput");
+      header("location: /index.php?page=create-user&error=emptyinput");
       exit();
     }
-    if ($this->invalidUid()) {
-      header("location: ../signup.php?error=username");
+    if ($this->invalidUsername()) {
+      header("location: /index.php?page=create-user&error=username&username=$this->username");
       exit();
     }
     if ($this->invalidEmail()) {
-      header("location: ../signup.php?error=email");
+      header("location: /index.php?page=create-user&error=email");
       exit();
     }
     if ($this->invalidPassword()) {
-      header("location: ../signup.php?error=password");
+      header("location: /index.php?page=create-user&error=password");
       exit();
     }
-    if ($this->uidTakenCheck()) {
-      header("location: ../signup.php?error=usernametaken");
+    if ($this->usernameTakenCheck()) {
+      header("location: /index.php?page=create-user&error=usernametaken");
       exit();
     }
-    $this->setUser($this->uid, $this->email, $this->password);
+    $this->setUser($this->name, $this->username, $this->password, $this->email, $this->title);
     
   }
 
   private function emptyInput()
   {
-    if (empty($this->uid) || empty($this->password) || empty($this->passwordRepeat) || empty($this->email)) {
+    if (empty($this->name) || empty($this->username) || empty($this->password) || empty($this->passwordRepeat) || empty($this->email) || empty($this->title)) {
       return true;
     } else {
       return false;
     }
   }
 
-  private function invalidUid()
+  private function invalidUsername()
   {
-    if (!preg_match("/^[a-zA-Z0-9]*$/", $this->uid)) {
+    if (preg_match("/^[a-zA-Z0-9]*$/", $this->username)) {
       return false;
     } else {
       return true;
@@ -61,7 +65,7 @@ class SignupController extends Signup
 
   private function invalidEmail()
   {
-    if (!filter_var($this->email, FILTER_VALIDATE_EMAIL)) {
+    if (filter_var($this->email, FILTER_VALIDATE_EMAIL)) {
       return false;
     } else {
       return true;
@@ -71,16 +75,16 @@ class SignupController extends Signup
   private function invalidPassword()
   {
     if ($this->password !== $this->passwordRepeat) {
-      return false;
-    } else {
       return true;
+    } else {
+      return false;
     }
   }
 
-  private function uidTakenCheck()
+  private function usernameTakenCheck()
   {
     $signup = new Signup();
-    if (!$signup->checkUser($this->uid, $this->email)) {
+    if ($signup->checkUser($this->username, $this->email)) {
       return false;
     } else {
       return true;
