@@ -5,10 +5,10 @@ if(isset($_POST["submit"])) {
   $passwordRepeat = $_POST["passwordRepeat"];
   $email = $_POST["email"];
 
-  include "../classes/signup-contr.classes.php";
-  include "../classes/signup.classes.php";
-  include "../classes/dbh.classes.php";
-  $signup = new SignupContr($uid, $password, $passwordRepeat, $email);
+  include "../controllers/signup.controller.php";
+  include "../models/signup.models.php";
+  include "../models/dbh.classes.php";
+  $signup = new SignupController($uid, $password, $passwordRepeat, $email);
   $signup->signUpUser();
 
   header("location: ../signup.php?error=none");

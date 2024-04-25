@@ -2,11 +2,11 @@
 
 class Login extends Dbh
 {
-  protected function getUser($uid,$password)
+  protected function getUser($username,$password)
   {
-    $sql = "SELECT users_pwd FROM users WHERE users_uid = ?";
+    $sql = "SELECT password FROM users WHERE username = ?";
     $stmt = $this->connect()->prepare($sql);
-    if (!$stmt->execute([$uid])) {
+    if (!$stmt->execute([$username])) {
       $stmt = null;
       header("location: ../signup.php?error=stmtfailed");
       exit();
@@ -26,8 +26,8 @@ class Login extends Dbh
       exit();
     }
     else {
-      $stmt = $this->connect()->prepare("SELECT * FROM users WHERE users_uid = ? OR users_email = ?AND users_pwd = ?");
-      if (!$stmt->execute([$uid, $uid,$password])) {
+      $stmt = $this->connect()->prepare("SELECT * FROM users WHERE username = ? OR email = ?AND password = ?");
+      if (!$stmt->execute([$username, $username,$password])) {
         $stmt = null;
         header("location: ../signup.php?error=stmtfailed");
         exit();
@@ -40,8 +40,8 @@ class Login extends Dbh
 
       $user = $stmt->fetchAll(PDO::FETCH_ASSOC);
       session_start();
-      $_SESSION["userid"] = $user[0]["users_id"];
-      $_SESSION["useruid"] = $user[0]["users_uid"];
+      $_SESSION["userid"] = $user[0]["id"];
+      $_SESSION["username"] = $user[0]["username"];
       $stmt = null;
     }
     // header("location: ../signup.php?error=none");
