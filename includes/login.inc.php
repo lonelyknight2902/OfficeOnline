@@ -1,13 +1,13 @@
 <?php
-if(isset($_POST["submit"])) {
-  $uid = $_POST["uid"];
+if (isset($_POST["submit"])) {
+  $username = $_POST["username"];
   $password = $_POST["password"];
-
-  include "../controllers/login.controller.php";
-  include "../models/login.models.php";
   include "../models/dbh.classes.php";
-  $login = new LoginController($uid, $password);
-  $login->loginUser();
+  include "../models/login.models.php";
+  include "../controllers/login.controller.php";
 
-  header("location: ../login.php?error=none");
+  $login = new LoginController($username, $password);
+  $login->loginAUser();
+
+  header("location: /index.php?page=overview");
 }

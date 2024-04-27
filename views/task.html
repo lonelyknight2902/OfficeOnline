@@ -7,8 +7,9 @@ include "models/dbh.classes.php";
 include "models/tasks.models.php";
 include "controllers/tasks.controller.php";
 $tasksController = new TaskController();
-$task = $tasksController->getATask($id);
-?>
+$task = $tasksController->getATask($id); if(isset($_COOKIE['user'])) { $data =
+unserialize($_COOKIE['user']); } else { header('Location:
+/index.php?page=login'); } ?>
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -81,30 +82,257 @@ $task = $tasksController->getATask($id);
             <img src="assets/blank-profile.webp" alt="" />
           </div>
           <div class="info">
-            <div class="name">John Doe</div>
-            <div class="email">johndoe@gmail.com</div>
+            <div class="name"><?php echo $data['name']; ?></div>
+            <div class="email"><?php echo $data['email']; ?></div>
           </div>
         </div>
       </div>
     </nav>
     <div class="content col-9">
       <h1><?php echo $task['name'] ?></h1>
+      <?php if($task['status'] == 'Todo') { ?>
       <div>
+        <!-- Button trigger modal -->
+        <button
+          type="button"
+          class="button button-primary"
+          data-bs-toggle="modal"
+          data-bs-target="#exampleModal"
+        >
+          <i class="bi bi-play"></i>Start task
+        </button>
+
+        <!-- Modal -->
+        <div
+          class="modal fade"
+          id="exampleModal"
+          tabindex="-1"
+          aria-labelledby="exampleModalLabel"
+          aria-hidden="true"
+        >
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">
+                  Start this task?
+                </h1>
+                <button
+                  type="button"
+                  class="btn-close"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"
+                ></button>
+              </div>
+              <div class="modal-body">
+                Do you want to begin doing this task?
+              </div>
+              <form
+                id="myForm"
+                action="includes/start-task.inc.php"
+                method="post"
+              >
+                <div class="modal-footer">
+                  <button
+                    type="button"
+                    class="button button-secondary"
+                    data-bs-dismiss="modal"
+                  >
+                    Close
+                  </button>
+                  <button
+                    id="start"
+                    type="submit"
+                    name="submit"
+                    class="button button-primary"
+                  >
+                    <i class="bi bi-play"></i>Start
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      <?php } ?>
+      <div class="info-data d-flex flex-column mb-3 gap-3">
         <div class="task-deadline">
-          <div><i class="bi bi-clock"></i> Deadline: </div>
-          <div><?php echo date_format(date_create($task['deadline']), "d M Y  g:i A") ?></div>
+          <div><i class="bi bi-clock"></i> Deadline:</div>
+          <div>
+            <?php echo date_format(date_create($task['deadline']), "d M Y  g:i A") ?>
+          </div>
         </div>
         <div class="task-info">
-          <div><i class="bi bi-person-lines-fill"></i> Assigned to: </div>
+          <div><i class="bi bi-person-lines-fill"></i> Assigned to:</div>
           <div class="assignee">
             <img src="assets/blank-profile.webp" alt="" />
             <!-- <div><?php echo $task[''] ?></div> -->
           </div>
         </div>
+        <div class="task-info">
+          <div><i class="bi bi-list-check"></i> Status:</div>
+          <div><?php echo $task['status'] ?></div>
+        </div>
       </div>
-      <p class="description">
-        <?php echo $task['description'] ?>
-      </p>
+      <div>
+        <h2>Description</h2>
+        <p class="description">
+          <?php echo $task['description'] ?>
+        </p>
+      </div>
+      <div class="submissions d-flex flex-column gap-2">
+        <h2>Submission</h2>
+        <div>
+          <button
+            type="button"
+            class="button button-primary"
+            data-bs-toggle="modal"
+            data-bs-target="#submitModal"
+          >
+            <i class="bi bi-arrow-up-square"></i>Add submission
+          </button>
+          <div
+            class="modal fade"
+            id="submitModal"
+            tabindex="-1"
+            aria-labelledby="submitModal"
+            aria-hidden="true"
+          >
+            <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h1 class="modal-title fs-5" id="exampleModalLabel">
+                    Add submission
+                  </h1>
+                  <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                  ></button>
+                </div>
+
+                <form
+                  id="submitForm"
+                  action="includes/submit-task.inc.php"
+                  method="post"
+                >
+                  <div class="modal-body">
+                    <div class="mb-3">
+                      <label for="detail" class="form-label">Detail</label>
+                      <textarea
+                        class="form-control"
+                        id="detail"
+                        name="detail"
+                        required
+                      ></textarea>
+                    </div>
+                    <!-- <div class="mb-3">
+                      <label for="files" class="form-label"
+                        >Files</label
+                      >
+                      <input
+                        type="file"
+                        class="form-control"
+                        id="files"
+                        name="files"
+                        required
+                      />
+                    </div> -->
+                  </div>
+                  <div class="modal-footer">
+                    <button
+                      type="button"
+                      class="button button-secondary"
+                      data-bs-dismiss="modal"
+                    >
+                      Close
+                    </button>
+                    <button
+                      id="start"
+                      type="submit"
+                      name="submit"
+                      class="button button-primary"
+                    >
+                      <i class="bi bi-arrow-up-square"></i>Submit
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <?php foreach($task['submissions'] as $submission): ?>
+          <div
+            class="submission"
+            data-bs-toggle="modal"
+            data-bs-target="#detailModal<?php echo $submission['id'] ?>"
+          >
+            <div class="submission-detail">
+              <div class="submission-title">
+                Submission #<?php echo $submission['id'] ?>
+              </div>
+              <div class="submission-info">
+                <div class="submission-user">
+                  <img src="assets/blank-profile.webp" alt="" />
+                  <div><?php echo $submission['userName'] ?></div>
+                </div>
+                <div>
+                  Submitted at:
+                  <?php echo date_format(date_create($submission['createdAt']), "d M Y  g:i A") ?>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="modal fade"
+            id="detailModal<?php echo $submission['id'] ?>"
+            tabindex="-1"
+            aria-labelledby="detailModal<?php echo $submission['id'] ?>"
+            aria-hidden="true"
+          >
+            <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h1 class="modal-title fs-5" id="exampleModalLabel">
+                    Submission #<?php echo $submission['id'] ?>
+                  </h1>
+                  <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                  ></button>
+                </div>
+                <div class="modal-body">
+                  <div class="mb-3">
+                    <label for="detail" class="form-label">Detail</label>
+                    <p><?php echo $submission['detail'] ?></p>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button
+                    type="button"
+                    class="button button-secondary"
+                    data-bs-dismiss="modal"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <?php endforeach;
+          ?>
+        </div>
+      </div>
+      <div></div>
     </div>
+    <script
+      src="https://code.jquery.com/jquery-3.2.1.min.js"
+      integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+      crossorigin="anonymous"
+    ></script>
+    <script src="views/task.js"></script>
   </body>
 </html>

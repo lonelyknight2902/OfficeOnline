@@ -4,24 +4,29 @@ include "models/tasks.models.php";
 include "controllers/tasks.controller.php";
 $tasksController = new TaskController();
 $tasks = $tasksController->getAllTasksByDepartment(1);
-
+date_default_timezone_set('Asia/Ho_Chi_Minh');
+if(isset($_COOKIE['user'])) {
+  $data = unserialize($_COOKIE['user']);
+} else {
+  header('Location: /index.php?page=login'); 
+}
 function todo($task) {
   return $task['status'] == "Todo";
 }
 function inProgress($task) {
   return $task['status'] == "In Progress";
 }
-
 function reviewing($task) {
-  return $task['status'] == "Reviewing";
-}
-
-function done($task) {
+  return $task['status'] == "Reviewing"; 
+} 
+function done($task) { 
   return $task['status'] == "Done";
 }
-
-function rejected($task) {
+function rejected($task) { 
   return $task['status'] == "Rejected";
+} 
+function isTaskOverdue($deadline) {
+  return strtotime($deadline) < time(); 
 }
 ?>
 <!DOCTYPE html>
@@ -43,11 +48,6 @@ function rejected($task) {
       integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
       crossorigin="anonymous"
     />
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-      integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-      crossorigin="anonymous"
-    ></script>
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css"
@@ -96,8 +96,8 @@ function rejected($task) {
             <img src="assets/blank-profile.webp" alt="" />
           </div>
           <div class="info">
-            <div class="name">John Doe</div>
-            <div class="email">johndoe@gmail.com</div>
+            <div class="name"><?php echo $data['name']; ?></div>
+            <div class="email"><?php echo $data['email']; ?></div>
           </div>
         </div>
       </div>
@@ -118,167 +118,248 @@ function rejected($task) {
         <div>Rejected</div>
         <div class="task-column">
           <?php
-          foreach (array_filter($tasks, "todo") as $task) {
-            if (todo($task)) {
-              echo "<div class='task-card'>";
-              echo '<a href="index.php?page=task&id=' . $task['id'] . '">';
-              echo "<div class='task-deadline'>";
-              echo "<div><i class='bi bi-clock'></i></div>";
-              echo "<div>". date_format(date_create($task['deadline']), "d M Y  g:i A") ."</div>";
-              echo "</div>";
-              echo "<div class='task-title'>" . $task['name'] . "</div>";
-              echo "<div class='task-info'>";
-              echo "<div class='assignee'>";
-              echo "<img src='assets/blank-profile.webp' alt='' />";
-              echo "</div>";
-              echo "<div class='info'>";
-              echo "<div class='info-item'>";
-              echo "<div><i class='bi bi-chat'></i></div>";
-              echo "<div>4</div>";
-              echo "</div>";
-              echo "<div class='info-item'>";
-              echo "<div><i class='bi bi-paperclip'></i></div>";
-              echo "<div>2</div>";
-              echo "</div>";
-              echo "</div>";
-              echo "</div>";
-              echo "</a>";
-              echo "</div>";
-            }
-          }
+          foreach (array_filter($tasks, "todo") as $task): ?>
+          <div class="task-card">
+            <?php 
+              $link = 'index.php?page=task&id=' . $task['id'];
+            ?>
+            <a href="<?php echo $link ?>">
+              <div class="<?php echo isTaskOverdue($task['deadline']) ? 'task-deadline overdue' : 'task-deadline' ?>">
+                <div><i class="bi bi-clock"></i></div>
+                <div>
+                  <?php echo date_format(date_create($task['deadline']), "d M Y  g:i A"); ?>
+                </div>
+              </div>
+              <div class="task-title"><?php echo $task['name']; ?></div>
+              <div class="task-info">
+                <div class="assignee">
+                  <?php
+                foreach($task['users'] as $user):
+                  $userName = $user['name'];?>
+                  <img
+                    data-bs-toggle="tooltip"
+                    data-bs-placement="bottom"
+                    title="<?php if($userName) { echo $userName;} else { echo 'null';} ?>"
+                    src="assets/blank-profile.webp"
+                    alt=""
+                  />
+                  <?php endforeach;
+                ?>
+                </div>
+                <div class="info">
+                  <div class="info-item">
+                    <div><i class="bi bi-chat"></i></div>
+                    <div>4</div>
+                  </div>
+                  <div class="info-item">
+                    <div><i class="bi bi-paperclip"></i></div>
+                    <div>2</div>
+                  </div>
+                </div>
+              </div>
+            </a>
+          </div>
+          <?php endforeach;
+      ?>
+        </div>
+        <div class="task-column">
+          <?php
+          foreach (array_filter($tasks, "inProgress") as $task): ?>
+          <div class="task-card">
+            <?php 
+                  $link = 'index.php?page=task&id=' . $task['id'];
+                ?>
+            <a href="<?php echo $link ?>">
+              <div
+                class="<?php echo isTaskOverdue($task['deadline']) ? 'task-deadline overdue' : 'task-deadline' ?>"
+              >
+                <div><i class="bi bi-clock"></i></div>
+                <div>
+                  <?php echo date_format(date_create($task['deadline']), "d M Y  g:i A"); ?>
+                </div>
+              </div>
+              <div class="task-title"><?php echo $task['name']; ?></div>
+              <div class="task-info">
+                <div class="assignee">
+                  <?php
+                    foreach($task['users'] as $user):
+                      $userName = $user['name'];?>
+                  <img
+                    data-bs-toggle="tooltip"
+                    data-bs-placement="bottom"
+                    title="<?php if($userName) { echo $userName;} else { echo 'null';} ?>"
+                    src="assets/blank-profile.webp"
+                    alt=""
+                  />
+                  <?php endforeach;
+                    ?>
+                </div>
+                <div class="info">
+                  <div class="info-item">
+                    <div><i class="bi bi-chat"></i></div>
+                    <div>4</div>
+                  </div>
+                  <div class="info-item">
+                    <div><i class="bi bi-paperclip"></i></div>
+                    <div>2</div>
+                  </div>
+                </div>
+              </div>
+            </a>
+          </div>
+          <?php endforeach;
           ?>
         </div>
         <div class="task-column">
           <?php
-          foreach (array_filter($tasks, "inProgress") as $task) {
-            if (todo($task)) {
-              echo "<div class='task-card'>";
-              echo '<a href="index.php?page=task&id=' . $task['id'] . '">';
-              echo "<div class='task-deadline'>";
-              echo "<div><i class='bi bi-clock'></i></div>";
-              echo "<div>". date_format(date_create($task['deadline']), "d M Y  g:i A") ."</div>";
-              echo "</div>";
-              echo "<div class='task-title'>" . $task['name'] . "</div>";
-              echo "<div class='task-info'>";
-              echo "<div class='assignee'>";
-              echo "<img src='assets/blank-profile.webp' alt='' />";
-              echo "</div>";
-              echo "<div class='info'>";
-              echo "<div class='info-item'>";
-              echo "<div><i class='bi bi-chat'></i></div>";
-              echo "<div>4</div>";
-              echo "</div>";
-              echo "<div class='info-item'>";
-              echo "<div><i class='bi bi-paperclip'></i></div>";
-              echo "<div>2</div>";
-              echo "</div>";
-              echo "</div>";
-              echo "</div>";
-              echo "</a>";
-              echo "</div>";
-            }
-          }
-          ?>
+          foreach (array_filter($tasks, "reviewing") as $task): ?>
+          <div class="task-card">
+            <?php 
+              $link = 'index.php?page=task&id=' . $task['id'];
+            ?>
+            <a href="<?php echo $link ?>">
+              <div class="task-deadline">
+                <div><i class="bi bi-clock"></i></div>
+                <div>
+                  <?php echo date_format(date_create($task['deadline']), "d M Y  g:i A"); ?>
+                </div>
+              </div>
+              <div class="task-title"><?php echo $task['name']; ?></div>
+              <div class="task-info">
+                <div class="assignee">
+                  <?php
+                foreach($task['users'] as $user):
+                  $userName = $user['name'];?>
+                  <img
+                    data-bs-toggle="tooltip"
+                    data-bs-placement="bottom"
+                    title="<?php if($userName) { echo $userName;} else { echo 'null';} ?>"
+                    src="assets/blank-profile.webp"
+                    alt=""
+                  />
+                  <?php endforeach;
+                ?>
+                </div>
+                <div class="info">
+                  <div class="info-item">
+                    <div><i class="bi bi-chat"></i></div>
+                    <div>4</div>
+                  </div>
+                  <div class="info-item">
+                    <div><i class="bi bi-paperclip"></i></div>
+                    <div>2</div>
+                  </div>
+                </div>
+              </div>
+            </a>
+          </div>
+          <?php endforeach;
+      ?>
         </div>
         <div class="task-column">
           <?php
-          foreach (array_filter($tasks, "reviewing") as $task) {
-            if (todo($task)) {
-              echo "<div class='task-card'>";
-              echo '<a href="index.php?page=task&id=' . $task['id'] . '">';
-              echo "<div class='task-deadline'>";
-              echo "<div><i class='bi bi-clock'></i></div>";
-              echo "<div>". date_format(date_create($task['deadline']), "d M Y  g:i A") ."</div>";
-              echo "</div>";
-              echo "<div class='task-title'>" . $task['name'] . "</div>";
-              echo "<div class='task-info'>";
-              echo "<div class='assignee'>";
-              echo "<img src='assets/blank-profile.webp' alt='' />";
-              echo "</div>";
-              echo "<div class='info'>";
-              echo "<div class='info-item'>";
-              echo "<div><i class='bi bi-chat'></i></div>";
-              echo "<div>4</div>";
-              echo "</div>";
-              echo "<div class='info-item'>";
-              echo "<div><i class='bi bi-paperclip'></i></div>";
-              echo "<div>2</div>";
-              echo "</div>";
-              echo "</div>";
-              echo "</div>";
-              echo "</a>";
-              echo "</div>";
-            }
-          }
-          ?>
+          foreach (array_filter($tasks, "done") as $task): ?>
+          <div class="task-card">
+            <?php 
+              $link = 'index.php?page=task&id=' . $task['id'];
+            ?>
+            <a href="<?php echo $link ?>">
+              <div class="task-deadline">
+                <div><i class="bi bi-clock"></i></div>
+                <div>
+                  <?php echo date_format(date_create($task['deadline']), "d M Y  g:i A"); ?>
+                </div>
+              </div>
+              <div class="task-title"><?php echo $task['name']; ?></div>
+              <div class="task-info">
+                <div class="assignee">
+                  <?php
+                foreach($task['users'] as $user):
+                  $userName = $user['name'];?>
+                  <img
+                    data-bs-toggle="tooltip"
+                    data-bs-placement="bottom"
+                    title="<?php if($userName) { echo $userName;} else { echo 'null';} ?>"
+                    src="assets/blank-profile.webp"
+                    alt=""
+                  />
+                  <?php endforeach;
+                ?>
+                </div>
+                <div class="info">
+                  <div class="info-item">
+                    <div><i class="bi bi-chat"></i></div>
+                    <div>4</div>
+                  </div>
+                  <div class="info-item">
+                    <div><i class="bi bi-paperclip"></i></div>
+                    <div>2</div>
+                  </div>
+                </div>
+              </div>
+            </a>
+          </div>
+          <?php endforeach;
+      ?>
         </div>
         <div class="task-column">
           <?php
-          foreach (array_filter($tasks, "done") as $task) {
-            if (todo($task)) {
-              echo "<div class='task-card'>";
-              echo '<a href="index.php?page=task&id=' . $task['id'] . '">';
-              echo "<div class='task-deadline'>";
-              echo "<div><i class='bi bi-clock'></i></div>";
-              echo "<div>". date_format(date_create($task['deadline']), "d M Y  g:i A") ."</div>";
-              echo "</div>";
-              echo "<div class='task-title'>" . $task['name'] . "</div>";
-              echo "<div class='task-info'>";
-              echo "<div class='assignee'>";
-              echo "<img src='assets/blank-profile.webp' alt='' />";
-              echo "</div>";
-              echo "<div class='info'>";
-              echo "<div class='info-item'>";
-              echo "<div><i class='bi bi-chat'></i></div>";
-              echo "<div>4</div>";
-              echo "</div>";
-              echo "<div class='info-item'>";
-              echo "<div><i class='bi bi-paperclip'></i></div>";
-              echo "<div>2</div>";
-              echo "</div>";
-              echo "</div>";
-              echo "</div>";
-              echo "</a>";
-              echo "</div>";
-            }
-          }
-          ?>
-        </div>
-        <div class="task-column">
-          <?php
-          foreach (array_filter($tasks, "rejected") as $task) {
-            if (todo($task)) {
-              $link = "index.php?page=task&id=" . $task['id'];
-              echo "<div class='task-card'>";
-              echo '<a href="index.php?page=task&id=' . $task['id'] . '">';
-              echo "<div class='task-deadline'>";
-              echo "<div><i class='bi bi-clock'></i></div>";
-              echo "<div>". date_format(date_create($task['deadline']), "d M Y  g:i A") ."</div>";
-              echo "</div>";
-              echo "<div class='task-title'>" . $task['name'] . "</div>";
-              echo "<div class='task-info'>";
-              echo "<div class='assignee'>";
-              echo "<img src='assets/blank-profile.webp' alt='' />";
-              echo "</div>";
-              echo "<div class='info'>";
-              echo "<div class='info-item'>";
-              echo "<div><i class='bi bi-chat'></i></div>";
-              echo "<div>4</div>";
-              echo "</div>";
-              echo "<div class='info-item'>";
-              echo "<div><i class='bi bi-paperclip'></i></div>";
-              echo "<div>2</div>";
-              echo "</div>";
-              echo "</div>";
-              echo "</div>";
-              echo "</a>";
-              echo "</div>";
-            }
-          }
-          ?>
+          foreach (array_filter($tasks, "rejected") as $task): ?>
+          <div class="task-card">
+            <?php 
+              $link = 'index.php?page=task&id=' . $task['id'];
+            ?>
+            <a href="<?php echo $link ?>">
+              <div class="task-deadline">
+                <div><i class="bi bi-clock"></i></div>
+                <div>
+                  <?php echo date_format(date_create($task['deadline']), "d M Y  g:i A"); ?>
+                </div>
+              </div>
+              <div class="task-title"><?php echo $task['name']; ?></div>
+              <div class="task-info">
+                <div class="assignee">
+                  <?php
+                foreach($task['users'] as $user):
+                  $userName = $user['name'];?>
+                  <img
+                    data-bs-toggle="tooltip"
+                    data-bs-placement="bottom"
+                    title="<?php if($userName) { echo $userName;} else { echo 'null';} ?>"
+                    src="assets/blank-profile.webp"
+                    alt=""
+                  />
+                  <?php endforeach;
+                ?>
+                </div>
+                <div class="info">
+                  <div class="info-item">
+                    <div><i class="bi bi-chat"></i></div>
+                    <div>4</div>
+                  </div>
+                  <div class="info-item">
+                    <div><i class="bi bi-paperclip"></i></div>
+                    <div>2</div>
+                  </div>
+                </div>
+              </div>
+            </a>
+          </div>
+          <?php endforeach;
+      ?>
         </div>
       </div>
     </div>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://code.jquery.com/jquery-3.2.1.min.js"
+      integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+      crossorigin="anonymous"
+    ></script>
     <script src="views/tasks.js"></script>
   </body>
 </html>

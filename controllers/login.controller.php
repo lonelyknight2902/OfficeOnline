@@ -2,30 +2,28 @@
 
 class LoginController extends Login
 {
-  private $uid;
+  private $username;
   private $password;
-  private $passwordRepeat;
-  private $email;
 
-  public function __construct($uid, $password)
+  public function __construct($username, $password)
   {
-    $this->uid = $uid;
+    $this->username = $username;
     $this->password = $password;
   }
 
-  public function loginUser()
+  public function loginAUser()
   {
     if ($this->emptyInput()) {
-      header("location: ../signup.php?error=emptyinput");
+      header("location: /index.php?page=login&error=emptyinput");
       exit();
     }
-    $this->getUser($this->uid, $this->password);
+    $this->loginUser($this->username, $this->password);
     
   }
 
   private function emptyInput()
   {
-    if (empty($this->uid) || empty($this->password)) {
+    if (empty($this->username) || empty($this->password)) {
       return true;
     } else {
       return false;

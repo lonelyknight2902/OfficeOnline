@@ -1,0 +1,13 @@
+.cover {
+  height: 100vh;
+  width: 100vw;
+  background-image: url('/assets/office-background.jpg');
+  background-size: cover;
+}
+
+.login {
+  background-color: #fff;
+  width: 30%;
+  padding: 50px 50px;
+  border-radius: 10px;
+}

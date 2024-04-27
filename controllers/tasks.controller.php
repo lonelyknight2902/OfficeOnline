@@ -27,10 +27,19 @@ class TaskController extends Tasks
     return $this->getTask($id);
   }
 
+  public function submitATask($id, $detail, $files) {
+    $this->submitTask($id, $detail, $files);
+  }
+
   // public function updateTask($id, $title, $description, $due_date, $status, $priority, $user_id)
   // {
   //   $this->editTask($id, $title, $description, $due_date, $status, $priority, $user_id);
   // }
+
+  public function updateATaskStatus($id, $status)
+  {
+    $this->editTaskStatus($id, $status);
+  }
 
   // public function deleteTask($id)
   // {

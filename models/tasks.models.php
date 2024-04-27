@@ -12,24 +12,113 @@ class Tasks extends Dbh
 
   protected function getTasksByDepartment($department)
   {
-    $sql = "SELECT * FROM tasks WHERE department = ?";
+    $sql = "SELECT t.id, t.name, t.description, t.deadline, t.status, t.priority, t.type, t.department, u.id userId, u.name userName  FROM tasks t LEFT JOIN tasks_users tu ON t.id = tu.Tasks_id LEFT JOIN users u ON tu.Users_id = u.id WHERE t.department = ? ORDER BY t.id, u.id";
     $stmt = $this->connect()->prepare($sql);
     $stmt->execute([$department]);
     $results = $stmt->fetchAll();
-    return $results;
+    $tasks = [];
+    $currentTaskId = null;
+    foreach ($results as $result) {
+      $taskId = $result['id'];
+      if ($taskId !== $currentTaskId) {
+        $tasks[$taskId] = [
+          'id' => $result['id'],
+          'name' => $result['name'],
+          'description' => $result['description'],
+          'deadline' => $result['deadline'],
+          'status' => $result['status'],
+          'priority' => $result['priority'],
+          'type' => $result['type'],
+          'department' => $result['department'],
+          'users' => []
+        ];
+        $currentTaskId = $taskId;
+      }
+      if($result['userId'] !== null){
+        $tasks[$currentTaskId]['users'][] = [
+          'id' => $result['userId'],
+          'name' => $result['userName']
+        ];
+      }
+    }
+    return $tasks;
   }
 
   protected function getTask($id)
   {
-    $sql = "SELECT * FROM tasks WHERE id = ?";
+    $sql = "SELECT t.id, t.name, t.description, t.deadline, t.status, t.priority, t.type, t.department, u.id userId, u.name userName  FROM tasks t LEFT JOIN tasks_users tu ON t.id = tu.Tasks_id LEFT JOIN users u ON tu.Users_id = u.id WHERE t.id = ? ORDER BY t.id, u.id";
+    // $sql = "SELECT * FROM tasks WHERE id = ?";
     $stmt = $this->connect()->prepare($sql);
     $stmt->execute([$id]);
-    $task = $stmt->fetch();
-    if (!$task) {
+    $results = $stmt->fetchAll();
+    if (!$results) {
       header("location: /index.php?page=tasks");
       exit();
     }
+    $task = [];
+    $currentTaskId = null;
+    foreach ($results as $taskInfo) {
+      $taskId = $taskInfo['id'];
+      if ($taskId !== $currentTaskId) {
+        $task = [
+          'id' => $taskInfo['id'],
+          'name' => $taskInfo['name'],
+          'description' => $taskInfo['description'],
+          'deadline' => $taskInfo['deadline'],
+          'status' => $taskInfo['status'],
+          'priority' => $taskInfo['priority'],
+          'type' => $taskInfo['type'],
+          'department' => $taskInfo['department'],
+          'users' => []
+        ];
+        $currentTaskId = $taskId;
+      }
+      if($taskInfo['userId'] !== null){
+        $task['users'][] = [
+          'id' => $taskInfo['userId'],
+          'name' => $taskInfo['userName']
+        ];
+      }
+    }
+    $task['submissions'] = $this->getSubmissions($id);
+
     return $task;
+  }
+
+  protected function getSubmissions($id)
+  {
+    $sql = "SELECT s.id, s.detail, s.createdAt, u.id userId, u.name userName FROM submissions s JOIN users u ON s.createdBy = u.id WHERE taskId = ?";
+    $stmt = $this->connect()->prepare($sql);
+    $stmt->execute([$id]);
+    $submissions = $stmt->fetchAll();
+    return $submissions;
+  }
+
+  protected function submitTask($id, $detail, $files)
+  {
+    $sql = "INSERT INTO submissions (taskId, detail) VALUES (?, ?)";
+    $stmt = $this->connect()->prepare($sql);
+    $stmt->execute([$id, $detail]);
+    $this->editTaskStatus($id, "Reviewing");
+    if(!$files){
+      return;
+    }
+    // if(count($files) === 0){
+    //   return;
+    // }
+    // $detailId = $this->connect()->lastInsertId();
+    // foreach ($files as $file) {
+    //   $sql = "INSERT INTO task_files (Task_details_id, file) VALUES (?, ?)";
+    //   $stmt = $this->connect()->prepare($sql);
+    //   $stmt->execute([$detailId, $file]);
+    // }
+  }
+
+  protected function editTaskStatus($id, $status)
+  {
+    $sql = "UPDATE tasks SET status = ? WHERE id = ?";
+    $stmt = $this->connect()->prepare($sql);
+    $stmt->execute([$status, $id]);
   }
 
   protected function setTask($name, $deadline, $priority, $description, $assignee, $created_by, $type, $department)

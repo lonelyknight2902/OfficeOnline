@@ -4,6 +4,11 @@ include "models/users.models.php";
 include "controllers/users.controller.php";
 $usersController = new UserController();
 $users = $usersController->getAllUsers();
+if(isset($_COOKIE['user'])) {
+  $data = unserialize($_COOKIE['user']);
+} else {
+  header('Location: /index.php?page=login');
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -84,8 +89,8 @@ $users = $usersController->getAllUsers();
             <img src="assets/blank-profile.webp" alt="" />
           </div>
           <div class="info">
-            <div class="name">John Doe</div>
-            <div class="email">johndoe@gmail.com</div>
+            <div class="name"><?php echo $data['name']; ?></div>
+            <div class="email"><?php echo $data['email']; ?></div>
           </div>
         </div>
       </div>

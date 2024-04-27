@@ -182,7 +182,10 @@ table {
 
 .sidebar .profile .info .name {
   font-weight: 600;
-  font-size: 1.25rem;
+}
+
+.sidebar .profile .info .email {
+  font-size: 0.75rem;
 }
 
 body {

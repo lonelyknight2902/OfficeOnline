@@ -15,27 +15,55 @@ if (isset($_GET['page'])) {
     //   include 'register.php';
     //   break;
     case 'overview':
-      include 'views/overview.html';
+      if (!isset($_COOKIE['user'])) {
+        header("location: /index.php?page=login");
+      } else {
+        include 'views/overview.html';
+      }
       break;
     case 'users':
-      include 'views/users.html';
+      if (!isset($_COOKIE['user'])) {
+        header("location: /index.php?page=login");
+      } else {
+        include 'views/users.html';
+      }
       break;
     case 'create-user':
-      include 'views/create-user.html';
+      if (!isset($_COOKIE['user'])) {
+        header("location: /index.php?page=login");
+      } else {
+        include 'views/create-user.html';
+      }
       break;
     case 'tasks':
-      include 'views/tasks.html';
+      if (!isset($_COOKIE['user'])) {
+        header("location: /index.php?page=login");
+      } else {
+        include 'views/tasks.html';
+      }
       break;
     case 'create-task':
-      include 'views/create-task.html';
+      if (!isset($_COOKIE['user'])) {
+        header("location: /index.php?page=login");
+      } else {
+        include 'views/create-task.html';
+      }
       break;
     case 'task':
-      include 'views/task.html';
-      break;  
+      if (!isset($_COOKIE['user'])) {
+        header("location: /index.php?page=login");
+      } else {
+        include 'views/task.html';
+      }
+      break;
     default:
-      include 'views/login.html';
+      if (!isset($_COOKIE['user'])) {
+        header("location: /index.php?page=login");
+      } else {
+        include 'views/overview.html';
+      }
       break;
   }
 } else {
-  include 'views/login.html';;
+  include 'views/overview.html';
 }

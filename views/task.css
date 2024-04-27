@@ -10,7 +10,7 @@
   gap: 0.5rem;
 }
 
-.task-info .assignee img {
+.task-info .assignee img, .submission-user img{
   width: 20px;
   height: 20px;
   border-radius: 50%;
@@ -30,4 +30,23 @@
 
 .description {
   font-size: 1.25rem;
+}
+
+.submission {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid #e0e0e0;
+  cursor: pointer;
+}
+
+.submission-user {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.submission-title {
+  font-size: 1.5rem;
 }

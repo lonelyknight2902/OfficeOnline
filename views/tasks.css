@@ -31,9 +31,16 @@
   align-items: center;
 }
 
+.overdue {
+  color: red;
+}
+
 .task-card .task-title {
   font-size: 2rem;
   line-height: 100%;
+  -webkit-line-clamp: 2;
+  height: 4ex;
+  text-overflow: ellipsis;
 }
 
 .task-info {
