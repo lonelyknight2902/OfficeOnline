@@ -218,7 +218,7 @@ function isTaskOverdue($deadline) {
               $link = 'index.php?page=task&id=' . $task['id'];
             ?>
             <a href="<?php echo $link ?>">
-              <div class="task-deadline">
+              <div class="<?php echo isTaskOverdue($task['deadline']) ? 'task-deadline overdue' : 'task-deadline' ?>">
                 <div><i class="bi bi-clock"></i></div>
                 <div>
                   <?php echo date_format(date_create($task['deadline']), "d M Y  g:i A"); ?>
@@ -264,7 +264,7 @@ function isTaskOverdue($deadline) {
               $link = 'index.php?page=task&id=' . $task['id'];
             ?>
             <a href="<?php echo $link ?>">
-              <div class="task-deadline">
+              <div class="<?php echo isTaskOverdue($task['deadline']) ? 'task-deadline overdue' : 'task-deadline' ?>">
                 <div><i class="bi bi-clock"></i></div>
                 <div>
                   <?php echo date_format(date_create($task['deadline']), "d M Y  g:i A"); ?>
@@ -310,7 +310,7 @@ function isTaskOverdue($deadline) {
               $link = 'index.php?page=task&id=' . $task['id'];
             ?>
             <a href="<?php echo $link ?>">
-              <div class="task-deadline">
+              <div class="<?php echo isTaskOverdue($task['deadline']) ? 'task-deadline overdue' : 'task-deadline' ?>">
                 <div><i class="bi bi-clock"></i></div>
                 <div>
                   <?php echo date_format(date_create($task['deadline']), "d M Y  g:i A"); ?>

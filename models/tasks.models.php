@@ -94,15 +94,15 @@ class Tasks extends Dbh
     return $submissions;
   }
 
-  protected function submitTask($id, $detail, $files)
+  protected function submitTask($id, $detail, $files, $userId)
   {
-    $sql = "INSERT INTO submissions (taskId, detail) VALUES (?, ?)";
+    $sql = "INSERT INTO submissions (taskId, detail, createdBy) VALUES (?, ?, ?)";
     $stmt = $this->connect()->prepare($sql);
-    $stmt->execute([$id, $detail]);
+    $stmt->execute([$id, $detail, $userId]);
     $this->editTaskStatus($id, "Reviewing");
-    if(!$files){
-      return;
-    }
+    // if(!$files){
+    //   return;
+    // }
     // if(count($files) === 0){
     //   return;
     // }

@@ -154,6 +154,130 @@ unserialize($_COOKIE['user']); } else { header('Location:
         </div>
       </div>
       <?php } ?>
+      <?php if($task['status'] == 'Reviewing') { ?>
+      <div class="d-flex gap-2">
+        <div>
+          <!-- Button trigger modal -->
+          <button
+            type="button"
+            class="button button-primary"
+            data-bs-toggle="modal"
+            data-bs-target="#approveModal"
+          >
+            <i class="bi bi-check2-circle"></i>Approve
+          </button>
+          <!-- Modal -->
+          <div
+            class="modal fade"
+            id="approveModal"
+            tabindex="-1"
+            aria-labelledby="approveModalLabel"
+            aria-hidden="true"
+          >
+            <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h1 class="modal-title fs-5" id="approveModalLabel">
+                    Approve result?
+                  </h1>
+                  <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                  ></button>
+                </div>
+                <div class="modal-body">
+                  Do you want to approve the result of this task?
+                </div>
+                <form
+                  id="approveForm"
+                  action="includes/approve-task.inc.php"
+                  method="post"
+                >
+                  <div class="modal-footer">
+                    <button
+                      type="button"
+                      class="button button-secondary"
+                      data-bs-dismiss="modal"
+                    >
+                      Close
+                    </button>
+                    <button
+                      id="start"
+                      type="submit"
+                      name="submit"
+                      class="button button-primary"
+                    >
+                      <i class="bi bi-check2-circle"></i>Approve
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <button
+            type="button"
+            class="button button-primary"
+            data-bs-toggle="modal"
+            data-bs-target="#rejectModal"
+          >
+            <i class="bi bi-x-circle"></i> Reject
+          </button>
+          <div
+            class="modal fade"
+            id="rejectModal"
+            tabindex="-1"
+            aria-labelledby="rejectModalLabel"
+            aria-hidden="true"
+          >
+            <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h1 class="modal-title fs-5" id="rejectModalLabel">
+                    Reject result?
+                  </h1>
+                  <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                  ></button>
+                </div>
+                <div class="modal-body">
+                  Do you want to reject the result of this task?
+                </div>
+                <form
+                  id="rejectForm"
+                  action="includes/reject-task.inc.php"
+                  method="post"
+                >
+                  <div class="modal-footer">
+                    <button
+                      type="button"
+                      class="button button-secondary"
+                      data-bs-dismiss="modal"
+                    >
+                      Close
+                    </button>
+                    <button
+                      id="start"
+                      type="submit"
+                      name="submit"
+                      class="button button-primary"
+                    >
+                      <i class="bi bi-x-circle"></i>Reject
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <?php } ?>
       <div class="info-data d-flex flex-column mb-3 gap-3">
         <div class="task-deadline">
           <div><i class="bi bi-clock"></i> Deadline:</div>
@@ -226,7 +350,7 @@ unserialize($_COOKIE['user']); } else { header('Location:
                         required
                       ></textarea>
                     </div>
-                    <!-- <div class="mb-3">
+                    <div class="mb-3">
                       <label for="files" class="form-label"
                         >Files</label
                       >
@@ -237,7 +361,7 @@ unserialize($_COOKIE['user']); } else { header('Location:
                         name="files"
                         required
                       />
-                    </div> -->
+                    </div>
                   </div>
                   <div class="modal-footer">
                     <button
