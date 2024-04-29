@@ -21,6 +21,13 @@ if (isset($_GET['page'])) {
         include 'views/overview.html';
       }
       break;
+    case 'roles':
+      if (!isset($_COOKIE['user'])) {
+        header("location: /index.php?page=login");
+      } else {
+        include 'views/roles.html';
+      }
+      break;
     case 'users':
       if (!isset($_COOKIE['user'])) {
         header("location: /index.php?page=login");

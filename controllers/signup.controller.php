@@ -8,8 +8,10 @@ class SignupController extends Signup
   private $passwordRepeat;
   private $email;
   private $title;
+  private $role;
+  private $department;
 
-  public function __construct($name, $username, $password, $passwordRepeat, $email, $title)
+  public function __construct($name, $username, $password, $passwordRepeat, $email, $title, $role, $department)
   {
     $this->name = $name;
     $this->username = $username;
@@ -17,6 +19,8 @@ class SignupController extends Signup
     $this->passwordRepeat = $passwordRepeat;
     $this->email = $email;
     $this->title = $title;
+    $this->role = $role;
+    $this->department = $department;
   }
 
   public function signUpUser()
@@ -41,7 +45,7 @@ class SignupController extends Signup
       header("location: /index.php?page=create-user&error=usernametaken");
       exit();
     }
-    $this->setUser($this->name, $this->username, $this->password, $this->email, $this->title);
+    $this->setUser($this->name, $this->username, $this->password, $this->email, $this->title, $this->role, $this->department);
     
   }
 

@@ -1,0 +1,222 @@
+<?php
+include "models/dbh.classes.php";
+include "models/roles.models.php";
+include "controllers/roles.controller.php";
+if(isset($_COOKIE['user'])) {
+  $data = unserialize($_COOKIE['user']);
+} else {
+  header('Location: /index.php?page=login');
+}
+$roleController = new RoleController();
+$roles = $roleController->getAllRoles(); $permissions =
+$roleController->getAllPermissions(); 
+?>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="views/style.css" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+      crossorigin="anonymous"
+    />
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+      crossorigin="anonymous"
+    ></script>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css"
+    />
+    <title>Document</title>
+  </head>
+  <body class="row">
+    <nav class="sidebar col-2">
+      <div>
+        <div class="title">Office Online</div>
+        <ul>
+          <li>
+            <a href="/index.php?page=overview">
+              <div><i class="bi bi-clipboard-data"></i></div>
+              <div>Overview</div></a
+            >
+          </li>
+          <li>
+            <a href="/index.php?page=task-menu">
+              <div>
+                <i class="bi bi-kanban"></i>
+              </div>
+              <div>Tasks</div></a
+            >
+          </li>
+          <li>
+            <a href="/index.php?page=users"
+              ><div><i class="bi bi-people-fill"></i></div>
+              <div>Users</div></a
+            >
+          </li>
+          <li class="active">
+            <a href="/index.php?page=roles"
+              ><div><i class="bi bi-people-fill"></i></div>
+              <div>Roles</div></a
+            >
+          </li>
+        </ul>
+      </div>
+      <div>
+        <hr />
+        <ul>
+          <li>
+            <a href="/users">
+              <div><i class="bi bi-gear"></i></div>
+              <div>Setting</div></a
+            >
+          </li>
+        </ul>
+        <div class="profile">
+          <div class="image">
+            <img src="assets/blank-profile.webp" alt="" />
+          </div>
+          <div class="info">
+            <div class="name"><?php echo $data['name']; ?></div>
+            <div class="email"><?php echo $data['email']; ?></div>
+          </div>
+        </div>
+      </div>
+    </nav>
+    <div class="content col-9">
+      <h1>Role Management</h1>
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Name</th>
+            <th scope="col">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <?php
+          foreach ($roles as $role): ?>
+          <tr>
+            <th scope="row"><?php echo $role['id'] ?></th>
+            <th scope="row"><?php echo $role['name'] ?></th>
+            <th scope="row">
+              <button
+                data-bs-toggle="modal"
+                data-bs-target="#roleModal<?php echo $role['id'] ?>"
+                class="btn button-primary"
+              >
+                <div><i class="bi bi-pencil"></i></div>
+                <div>Edit</div>
+              </button>
+              <div
+                class="modal fade"
+                id="roleModal<?php echo $role['id'] ?>"
+                tabindex="-1"
+                aria-labelledby="roleModal<?php echo $role['id'] ?>"
+                aria-hidden="true"
+              >
+                <div class="modal-dialog modal-dialog-centered">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h1 class="modal-title fs-5" id="exampleModalLabel">
+                        <?php echo $role['name'] ?>
+                      </h1>
+                      <button
+                        type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close"
+                      ></button>
+                    </div>
+                    <form
+                      id="submitForm"
+                      action="includes/update-permission.inc.php"
+                      method="post"
+                    >
+                      <div class="modal-body">
+                        <?php
+                        foreach ($permissions as $permission): ?>
+                        <div>
+                          <input
+                            type="hidden"
+                            name="id"
+                            value="<?php echo $role['id'] ?>"
+                          />
+                        </div>
+                        <div class="form-check">
+                          <input class="form-check-input" type="checkbox" name="<?php echo $permission['id'] ?>"
+                          value="<?php echo $permission['id'] ?>" id="<?php echo $role['id'] . $permission['id'] ?>"
+                          <?php if(in_array($permission['name'], array_column($role['permissions'], "name"))) echo 'checked' ?>>
+                          <label
+                            class="form-check-label"
+                            for="<?php echo $role['id'] . $permission['id'] ?>"
+                          >
+                            <?php echo $permission['name'] ?>
+                            <?php if(in_array($permission['name'], $role['permissions'])) echo 'checked' ?>
+                          </label>
+                        </div>
+                        <?php endforeach;
+                        ?>
+                      </div>
+                      <div class="modal-footer">
+                        <button
+                          type="button"
+                          class="button button-secondary"
+                          data-bs-dismiss="modal"
+                        >
+                          Close
+                        </button>
+                        <button
+                          id="start"
+                          type="submit"
+                          name="submit"
+                          class="button button-primary"
+                        >
+                          <i class="bi bi-arrow-up-square"></i>Submit
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </th>
+          </tr>
+          <!-- echo "<tr>";
+            echo "<th scope='row'>" . $role['id'] . "</th>";
+            echo "<td>" . $role['name'] . "</td>";
+            echo "</tr>"; -->
+          <?php endforeach;
+          ?>
+          <!-- <tr>
+            <th scope="row">1</th>
+            <td>Mark</td>
+            <td>Otto</td>
+            <td>@mdo</td>
+          </tr>
+          <tr>
+            <th scope="row">2</th>
+            <td>Jacob</td>
+            <td>Thornton</td>
+            <td>@fat</td>
+          </tr>
+          <tr>
+            <th scope="row">3</th>
+            <td colspan="2">Larry the Bird</td>
+            <td>@twitter</td>
+          </tr> -->
+        </tbody>
+      </table>
+    </div>
+  </body>
+</html>

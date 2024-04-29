@@ -1,9 +1,13 @@
 <?php
 include "models/dbh.classes.php";
 include "models/roles.models.php";
+include "models/departments.models.php";
 include "controllers/roles.controller.php";
+include "controllers/departments.controller.php";
 $roleController = new RoleController();
 $roles = $roleController->getAllRoles();
+$departmentController = new DepartmentController();
+$departments = $departmentController->getAllDepartments();
 if(isset($_COOKIE['user'])) {
   $data = unserialize($_COOKIE['user']);
 } else {
@@ -64,6 +68,12 @@ if(isset($_COOKIE['user'])) {
               <div>Users</div></a
             >
           </li>
+          <li>
+            <a href="/index.php?page=roles"
+              ><div><i class="bi bi-people-fill"></i></div>
+              <div>Roles</div></a
+            >
+          </li>
         </ul>
       </div>
       <div>
@@ -90,7 +100,7 @@ if(isset($_COOKIE['user'])) {
     <div class="content col-9">
       <h1>Create a New User</h1>
       <div>
-        <form action="includes/signup.inc.php" method="post">
+        <form id="myForm" action="includes/signup.inc.php" method="post">
           <div class="mb-3">
             <label for="name" class="form-label">Name</label>
             <input
@@ -110,6 +120,9 @@ if(isset($_COOKIE['user'])) {
               name="username"
               required
             />
+            <div class="invalid-feedback">
+              Invalid username.
+            </div>
           </div>
           <div class="mb-3">
             <label for="email" class="form-label">Email</label>
@@ -120,6 +133,9 @@ if(isset($_COOKIE['user'])) {
               name="email"
               required
             />
+            <div class="invalid-feedback">
+              Invalid email.
+            </div>
           </div>
           <div class="mb-3">
             <label for="password" class="form-label">Password</label>
@@ -130,6 +146,9 @@ if(isset($_COOKIE['user'])) {
               name="password"
               required
             />
+            <div class="invalid-feedback">
+              Invalid password.
+            </div>
           </div>
           <div class="mb-3">
             <label for="passwordRepeat" class="form-label">Confirm Password</label>
@@ -140,6 +159,9 @@ if(isset($_COOKIE['user'])) {
               name="passwordRepeat"
               required
             />
+            <div class="invalid-feedback">
+              Password does not match.
+            </div>
           </div>
           <div class="mb-3">
             <label for="title" class="form-label">Title</label>
@@ -150,6 +172,9 @@ if(isset($_COOKIE['user'])) {
               name="title"
               required
             />
+            <div class="invalid-feedback">
+              Title must not be empty.
+            </div>
           </div>
           <div class="mb-3">
             <label for="role" class="form-label">Role</label>
@@ -167,6 +192,22 @@ if(isset($_COOKIE['user'])) {
               <option value="user">User</option> -->
             </select>
           </div>
+          <div class="mb-3">
+            <label for="department" class="form-label">Department</label>
+            <select class="form-select" id="department" name="department" required>
+              <?php
+              foreach ($departments as $department) {
+                if ($department['name'] == 'Information Technology') {
+                  echo "<option value='" . $department['id'] . "' selected>" . $department['name'] . "</option>";
+                } else {
+                echo "<option value='" . $department['id'] . "'>" . $department['name'] . "</option>";
+                }
+              }
+              ?>
+              <!-- <option value="admin">Admin</option>
+              <option value="user">User</option> -->
+            </select>
+          </div>
           <div class="d-flex gap-3 justify-content-end">
             <button class="button button-secondary">Cancel</button>
             <button type="submit" name="submit" class="button button-primary">Create</button>
@@ -174,5 +215,6 @@ if(isset($_COOKIE['user'])) {
         </form>
       </div>
     </div>
+    <script src="views/create-user.js"></script>
   </body>
 </html>
