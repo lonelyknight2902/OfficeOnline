@@ -121,6 +121,32 @@ class Tasks extends Dbh
     $stmt->execute([$status, $id]);
   }
 
+  protected function getNumberOfTasksOfDepartment($department)
+  {
+    $sql = "SELECT status, COUNT(*) number FROM tasks WHERE type = 'department' AND department = ? GROUP BY status ORDER BY FIELD(status,'Todo','In Progress','Reviewing', 'Done', 'Rejected');";
+    $stmt = $this->connect()->prepare($sql);
+    $stmt->execute([$department]);
+    $result = $stmt->fetchAll();
+    return $result;
+  }
+
+  protected function getNumberOfTasksOfCompany()
+  {
+    $sql = "SELECT status, COUNT(*) number FROM tasks WHERE type = 'company' GROUP BY status ORDER BY FIELD(status,'Todo','In Progress','Reviewing', 'Done', 'Rejected');";
+    $stmt = $this->connect()->query($sql);
+    $result = $stmt->fetchAll();
+    return $result;
+  }
+
+  public function getNumberOfTasksOfUser($userId)
+  {
+    $sql = "SELECT t.status, COUNT(*) number FROM tasks t JOIN tasks_users tu ON t.id = tu.Tasks_id JOIN users u ON u.id = tu.Users_id WHERE u.id = ? GROUP BY status ORDER BY FIELD(status,'Todo','In Progress','Reviewing', 'Done', 'Rejected');";
+    $stmt = $this->connect()->prepare($sql);
+    $stmt->execute([$userId]);
+    $result = $stmt->fetchAll();
+    return $result;
+  }
+
   protected function setTask($name, $deadline, $priority, $description, $assignee, $created_by, $type, $department)
   {
     $sql = "INSERT INTO tasks (name, description, createdBy, deadline, status, priority, type, department) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";

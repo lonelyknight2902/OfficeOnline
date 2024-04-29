@@ -35,6 +35,13 @@ if (isset($_GET['page'])) {
         include 'views/create-user.html';
       }
       break;
+    case 'task-menu':
+      if (!isset($_COOKIE['user'])) {
+        header("location: /index.php?page=login");
+      } else {
+        include 'views/task-menu.html';
+      }
+      break;
     case 'tasks':
       if (!isset($_COOKIE['user'])) {
         header("location: /index.php?page=login");

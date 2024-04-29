@@ -1,10 +1,12 @@
 <?php
-if(isset($_COOKIE['user'])) {
-  $data = unserialize($_COOKIE['user']);
-} else {
-  header('Location: /index.php?page=login');
-}
-?>
+include "models/dbh.classes.php";
+include "models/tasks.models.php";
+include "controllers/tasks.controller.php";
+$taskController = new TaskController();
+if(isset($_COOKIE['user'])) { $data =
+unserialize($_COOKIE['user']); } else { header('Location:
+/index.php?page=login'); }
+$userTasks = $taskController->getNumberOfTasksOfAUser($data['id']); ?>
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -46,7 +48,7 @@ if(isset($_COOKIE['user'])) {
             >
           </li>
           <li>
-            <a href="/index.php?page=tasks">
+            <a href="/index.php?page=task-menu">
               <div>
                 <i class="bi bi-kanban"></i>
               </div>
@@ -83,42 +85,26 @@ if(isset($_COOKIE['user'])) {
       </div>
     </nav>
     <div class="content col-9">
-      <h1>Welcome back, User</h1>
+      <h1>
+        Welcome back,
+        <?php echo $data['name'] ?>
+      </h1>
       <div>
-        <button class="button button-primary">
-          <div><i class="bi bi-plus-lg"></i></div>
-          <div>Add User</div>
-        </button>
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Your Tasks</h5>
+            <p class="card-text">
+              You have
+              <?php echo $userTasks[0]['status'] == 'Todo' ? $userTasks[0]['number'] : 0  ?>
+              tasks to do.
+            </p>
+            <a href="/index.php?page=task-menu">
+            <button class="button button-primary">View Tasks
+            </button>
+          </a>
+          </div>
+        </div>
       </div>
-      <table class="table">
-        <thead>
-          <tr>
-            <th scope="col">#</th>
-            <th scope="col">First</th>
-            <th scope="col">Last</th>
-            <th scope="col">Handle</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <th scope="row">1</th>
-            <td>Mark</td>
-            <td>Otto</td>
-            <td>@mdo</td>
-          </tr>
-          <tr>
-            <th scope="row">2</th>
-            <td>Jacob</td>
-            <td>Thornton</td>
-            <td>@fat</td>
-          </tr>
-          <tr>
-            <th scope="row">3</th>
-            <td colspan="2">Larry the Bird</td>
-            <td>@twitter</td>
-          </tr>
-        </tbody>
-      </table>
     </div>
   </body>
 </html>

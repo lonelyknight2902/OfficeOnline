@@ -36,6 +36,20 @@ class TaskController extends Tasks
   //   $this->editTask($id, $title, $description, $due_date, $status, $priority, $user_id);
   // }
 
+  public function getNumberOfTasks($department)
+  {
+    if($department == 0) {
+      return $this->getNumberOfTasksOfCompany();
+    } else {
+      return $this->getNumberOfTasksOfDepartment($department);
+    }
+  }
+
+  public function getNumberOfTasksOfAUser($userId)
+  {
+    return $this->getNumberOfTasksOfUser($userId);
+  }
+
   public function updateATaskStatus($id, $status)
   {
     $this->editTaskStatus($id, $status);

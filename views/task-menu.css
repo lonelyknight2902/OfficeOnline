@@ -1,0 +1,14 @@
+.department-card {
+  border: 1px solid #e0e0e0;
+  padding: 20px 30px;
+  border-radius: 10px;
+}
+
+.department-card a {
+  color: #000;
+  text-decoration: none;
+}
+
+.department-card h2:hover {
+  text-decoration: underline;
+}
