@@ -3,6 +3,7 @@
 // $(document).ready(function () {
 //   $('[data-toggle="tooltip"]').tooltip();
 // });
+const searchParams = new URLSearchParams(window.location.search);
 var tooltipTriggerList = [].slice.call(
   document.querySelectorAll('[data-bs-toggle="tooltip"]')
 );
@@ -16,9 +17,8 @@ var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
 // });
 const button = document.getElementById("create-task");
 button.addEventListener("click", async () => {
-  document.location.href = "index.php?page=create-task";
+  document.location.href = `index.php?page=create-task&type=${searchParams.get('type')}`;
 });
-
 // const users = document.querySelectorAll(".tt");
 // users.forEach((user) => {
 //   const tooltip = new bootstrap.Tooltip(user);

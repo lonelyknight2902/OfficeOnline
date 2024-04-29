@@ -204,6 +204,16 @@ body {
   justify-content: space-between;
 }
 
+#logout {
+  padding: 5px 10px;
+  border-radius: 0.5rem;
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  justify-content: space-between;
+}
+
 .button-primary {
   background-color: #034951;
   color: white;

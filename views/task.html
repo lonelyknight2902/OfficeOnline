@@ -59,18 +59,22 @@ unserialize($_COOKIE['user']); } else { header('Location:
               <div>Tasks</div></a
             >
           </li>
+          <?php if (in_array('Manage Users', array_column($data['permissions'], "name"))): ?>
           <li>
             <a href="/index.php?page=users"
               ><div><i class="bi bi-people-fill"></i></div>
               <div>Users</div></a
             >
           </li>
+          <?php endif; ?>
+          <?php if (in_array('Manage Roles', array_column($data['permissions'], "name"))): ?>
           <li>
             <a href="/index.php?page=roles"
               ><div><i class="bi bi-people-fill"></i></div>
               <div>Roles</div></a
             >
           </li>
+          <?php endif; ?>
         </ul>
       </div>
       <div>
@@ -83,20 +87,79 @@ unserialize($_COOKIE['user']); } else { header('Location:
             >
           </li>
         </ul>
-        <div class="profile">
-          <div class="image">
-            <img src="assets/blank-profile.webp" alt="" />
+        <div class="d-flex justify-content-between align-items-center">
+          <div class="profile">
+            <div class="image">
+              <img src="assets/blank-profile.webp" alt="" />
+            </div>
+            <div class="info">
+              <div class="name"><?php echo $data['name']; ?></div>
+              <div class="email"><?php echo $data['email']; ?></div>
+            </div>
           </div>
-          <div class="info">
-            <div class="name"><?php echo $data['name']; ?></div>
-            <div class="email"><?php echo $data['email']; ?></div>
+          <div>
+            <button
+              id="logout"
+              class="button-primary"
+              data-bs-toggle="modal"
+              data-bs-target="#logoutModal"
+            >
+              <i class="bi bi-box-arrow-right"></i>
+            </button>
           </div>
         </div>
       </div>
     </nav>
     <div class="content col-9">
+      <div
+        class="modal fade"
+        id="logoutModal"
+        tabindex="-1"
+        aria-labelledby="logoutModal"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="exampleModalLabel">Logout</h1>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div class="modal-body">
+              <div class="mb-3">Are you sure you want to logout?</div>
+            </div>
+            <form
+              id="logoutForm"
+              action="includes/logout.inc.php"
+              method="post"
+            >
+              <div class="modal-footer">
+                <button
+                  type="button"
+                  class="button button-secondary"
+                  data-bs-dismiss="modal"
+                >
+                  Close
+                </button>
+                <button
+                  id="logoutButton"
+                  type="submit"
+                  name="submit"
+                  class="button button-primary"
+                >
+                  <i class="bi bi-box-arrow-right"></i>Logout
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
       <h1><?php echo $task['name'] ?></h1>
-      <?php if($task['status'] == 'Todo') { ?>
+      <?php if($task['status'] == 'Todo' && in_array($data['id'], array_column($task['users'], "id"))) { ?>
       <div>
         <!-- Button trigger modal -->
         <button
@@ -160,7 +223,7 @@ unserialize($_COOKIE['user']); } else { header('Location:
         </div>
       </div>
       <?php } ?>
-      <?php if($task['status'] == 'Reviewing') { ?>
+      <?php if($task['status'] == 'Reviewing' && ((in_array('Accept Department Tasks', array_column($data['permissions'], "name")) && $task['type'] == 'department') || (in_array('Accept Company Tasks', array_column($data['permissions'], "name")) && $task['type'] == 'company'))) { ?>
       <div class="d-flex gap-2">
         <div>
           <!-- Button trigger modal -->
@@ -311,6 +374,7 @@ unserialize($_COOKIE['user']); } else { header('Location:
       </div>
       <div class="submissions d-flex flex-column gap-2">
         <h2>Submission</h2>
+        <?php if($task['status'] == 'In Progress' && in_array($data['id'], array_column($task['users'], "id"))) { ?>
         <div>
           <button
             type="button"
@@ -391,6 +455,7 @@ unserialize($_COOKIE['user']); } else { header('Location:
             </div>
           </div>
         </div>
+        <?php } ?>
         <div>
           <?php foreach($task['submissions'] as $submission): ?>
           <div

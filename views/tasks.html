@@ -1,34 +1,31 @@
 <?php
-include "models/dbh.classes.php";
-include "models/tasks.models.php";
-include "controllers/tasks.controller.php";
-$tasksController = new TaskController();
-$tasks = $tasksController->getAllTasksByDepartment(1);
-date_default_timezone_set('Asia/Ho_Chi_Minh');
 if(isset($_COOKIE['user'])) {
   $data = unserialize($_COOKIE['user']);
 } else {
   header('Location: /index.php?page=login'); 
 }
-function todo($task) {
-  return $task['status'] == "Todo";
+
+if(!isset($_GET['type'])) {
+  header('Location: /index.php?page=overview');
 }
-function inProgress($task) {
-  return $task['status'] == "In Progress";
+$type = $_GET['type'];
+if (!((in_array('View Department Tasks', array_column($data['permissions'], "name")) && $type == 'department') || (in_array('View Company Tasks', array_column($data['permissions'], "name")) && $type == 'company'))){
+  header('Location: /index.php?page=overview');
 }
-function reviewing($task) {
-  return $task['status'] == "Reviewing"; 
-} 
-function done($task) { 
-  return $task['status'] == "Done";
-}
-function rejected($task) { 
-  return $task['status'] == "Rejected";
-} 
-function isTaskOverdue($deadline) {
-  return strtotime($deadline) < time(); 
-}
-?>
+
+include "models/dbh.classes.php";
+include "models/tasks.models.php";
+include "controllers/tasks.controller.php";
+$tasksController = new TaskController();
+if($type == 'company') {
+  $tasks = $tasksController->getAllTasksByDepartment(0); } else { $tasks =
+$tasksController->getAllTasksByDepartment($data['department']); }
+date_default_timezone_set('Asia/Ho_Chi_Minh'); function todo($task) { return
+$task['status'] == "Todo"; } function inProgress($task) { return $task['status']
+== "In Progress"; } function reviewing($task) { return $task['status'] ==
+"Reviewing"; } function done($task) { return $task['status'] == "Done"; }
+function rejected($task) { return $task['status'] == "Rejected"; } function
+isTaskOverdue($deadline) { return strtotime($deadline) < time(); } ?>
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -73,18 +70,22 @@ function isTaskOverdue($deadline) {
               <div>Tasks</div></a
             >
           </li>
+          <?php if (in_array('Manage Users', array_column($data['permissions'], "name"))): ?>
           <li>
             <a href="/index.php?page=users"
               ><div><i class="bi bi-people-fill"></i></div>
               <div>Users</div></a
             >
           </li>
+          <?php endif; ?>
+          <?php if (in_array('Manage Roles', array_column($data['permissions'], "name"))): ?>
           <li>
             <a href="/index.php?page=roles"
               ><div><i class="bi bi-people-fill"></i></div>
               <div>Roles</div></a
             >
           </li>
+          <?php endif; ?>
         </ul>
       </div>
       <div>
@@ -97,25 +98,86 @@ function isTaskOverdue($deadline) {
             >
           </li>
         </ul>
-        <div class="profile">
-          <div class="image">
-            <img src="assets/blank-profile.webp" alt="" />
+        <div class="d-flex justify-content-between align-items-center">
+          <div class="profile">
+            <div class="image">
+              <img src="assets/blank-profile.webp" alt="" />
+            </div>
+            <div class="info">
+              <div class="name"><?php echo $data['name']; ?></div>
+              <div class="email"><?php echo $data['email']; ?></div>
+            </div>
           </div>
-          <div class="info">
-            <div class="name"><?php echo $data['name']; ?></div>
-            <div class="email"><?php echo $data['email']; ?></div>
+          <div>
+            <button
+              id="logout"
+              class="button-primary"
+              data-bs-toggle="modal"
+              data-bs-target="#logoutModal"
+            >
+              <i class="bi bi-box-arrow-right"></i>
+            </button>
           </div>
         </div>
       </div>
     </nav>
     <div class="content col-9">
+      <div
+        class="modal fade"
+        id="logoutModal"
+        tabindex="-1"
+        aria-labelledby="logoutModal"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="exampleModalLabel">Logout</h1>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div class="modal-body">
+              <div class="mb-3">Are you sure you want to logout?</div>
+            </div>
+            <form
+              id="logoutForm"
+              action="includes/logout.inc.php"
+              method="post"
+            >
+              <div class="modal-footer">
+                <button
+                  type="button"
+                  class="button button-secondary"
+                  data-bs-dismiss="modal"
+                >
+                  Close
+                </button>
+                <button
+                  id="logoutButton"
+                  type="submit"
+                  name="submit"
+                  class="button button-primary"
+                >
+                  <i class="bi bi-box-arrow-right"></i>Logout
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
       <h1>Tasks Management</h1>
+      <?php if (!((in_array('Create Department Tasks', array_column($data['permissions'], "name")) && $type == 'department') || (in_array('Create Company Tasks', array_column($data['permissions'], "name")) && $type == 'company'))){ ?>
       <div>
         <button id="create-task" class="button button-primary">
           <div><i class="bi bi-plus-lg"></i></div>
           <div>Create Task</div>
         </button>
       </div>
+      <?php } ?>
       <div class="tasks">
         <div>Todo</div>
         <div>In Progress</div>
@@ -130,7 +192,9 @@ function isTaskOverdue($deadline) {
               $link = 'index.php?page=task&id=' . $task['id'];
             ?>
             <a href="<?php echo $link ?>">
-              <div class="<?php echo isTaskOverdue($task['deadline']) ? 'task-deadline overdue' : 'task-deadline' ?>">
+              <div
+                class="<?php echo isTaskOverdue($task['deadline']) ? 'task-deadline overdue' : 'task-deadline' ?>"
+              >
                 <div><i class="bi bi-clock"></i></div>
                 <div>
                   <?php echo date_format(date_create($task['deadline']), "d M Y  g:i A"); ?>
@@ -224,7 +288,9 @@ function isTaskOverdue($deadline) {
               $link = 'index.php?page=task&id=' . $task['id'];
             ?>
             <a href="<?php echo $link ?>">
-              <div class="<?php echo isTaskOverdue($task['deadline']) ? 'task-deadline overdue' : 'task-deadline' ?>">
+              <div
+                class="<?php echo isTaskOverdue($task['deadline']) ? 'task-deadline overdue' : 'task-deadline' ?>"
+              >
                 <div><i class="bi bi-clock"></i></div>
                 <div>
                   <?php echo date_format(date_create($task['deadline']), "d M Y  g:i A"); ?>
@@ -270,7 +336,9 @@ function isTaskOverdue($deadline) {
               $link = 'index.php?page=task&id=' . $task['id'];
             ?>
             <a href="<?php echo $link ?>">
-              <div class="<?php echo isTaskOverdue($task['deadline']) ? 'task-deadline overdue' : 'task-deadline' ?>">
+              <div
+                class="<?php echo isTaskOverdue($task['deadline']) ? 'task-deadline overdue' : 'task-deadline' ?>"
+              >
                 <div><i class="bi bi-clock"></i></div>
                 <div>
                   <?php echo date_format(date_create($task['deadline']), "d M Y  g:i A"); ?>
@@ -316,7 +384,9 @@ function isTaskOverdue($deadline) {
               $link = 'index.php?page=task&id=' . $task['id'];
             ?>
             <a href="<?php echo $link ?>">
-              <div class="<?php echo isTaskOverdue($task['deadline']) ? 'task-deadline overdue' : 'task-deadline' ?>">
+              <div
+                class="<?php echo isTaskOverdue($task['deadline']) ? 'task-deadline overdue' : 'task-deadline' ?>"
+              >
                 <div><i class="bi bi-clock"></i></div>
                 <div>
                   <?php echo date_format(date_create($task['deadline']), "d M Y  g:i A"); ?>

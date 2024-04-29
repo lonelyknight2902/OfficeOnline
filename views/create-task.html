@@ -1,14 +1,21 @@
 <?php
-include "models/dbh.classes.php";
-include "models/users.models.php";
-include "controllers/users.controller.php";
-$usersController = new UserController();
-$users = $usersController->getAllUsers();
 if(isset($_COOKIE['user'])) {
   $data = unserialize($_COOKIE['user']);
 } else {
   header('Location: /index.php?page=login');
 }
+if(!isset($_GET['type'])) {
+  header('Location: /index.php?page=overview');
+}
+$type = $_GET['type'];
+if (!((in_array('Create Department Tasks', array_column($data['permissions'], "name")) && $type == 'department') || (in_array('Create Company Tasks', array_column($data['permissions'], "name")) && $type == 'company'))){
+  header('Location: /index.php?page=overview');
+}
+include "models/dbh.classes.php";
+include "models/users.models.php";
+include "controllers/users.controller.php";
+$usersController = new UserController();
+$users = $usersController->getAllUsers();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -66,18 +73,22 @@ if(isset($_COOKIE['user'])) {
               <div>Tasks</div></a
             >
           </li>
+          <?php if (in_array('Manage Users', array_column($data['permissions'], "name"))): ?>
           <li>
             <a href="/index.php?page=users"
               ><div><i class="bi bi-people-fill"></i></div>
               <div>Users</div></a
             >
           </li>
+          <?php endif; ?>
+          <?php if (in_array('Manage Roles', array_column($data['permissions'], "name"))): ?>
           <li>
             <a href="/index.php?page=roles"
               ><div><i class="bi bi-people-fill"></i></div>
               <div>Roles</div></a
             >
           </li>
+          <?php endif; ?>
         </ul>
       </div>
       <div>
@@ -90,18 +101,77 @@ if(isset($_COOKIE['user'])) {
             >
           </li>
         </ul>
-        <div class="profile">
-          <div class="image">
-            <img src="assets/blank-profile.webp" alt="" />
+        <div class="d-flex justify-content-between align-items-center">
+          <div class="profile">
+            <div class="image">
+              <img src="assets/blank-profile.webp" alt="" />
+            </div>
+            <div class="info">
+              <div class="name"><?php echo $data['name']; ?></div>
+              <div class="email"><?php echo $data['email']; ?></div>
+            </div>
           </div>
-          <div class="info">
-            <div class="name"><?php echo $data['name']; ?></div>
-            <div class="email"><?php echo $data['email']; ?></div>
+          <div>
+            <button
+              id="logout"
+              class="button-primary"
+              data-bs-toggle="modal"
+              data-bs-target="#logoutModal"
+            >
+              <i class="bi bi-box-arrow-right"></i>
+            </button>
           </div>
         </div>
       </div>
     </nav>
     <div class="content col-9">
+      <div
+        class="modal fade"
+        id="logoutModal"
+        tabindex="-1"
+        aria-labelledby="logoutModal"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="exampleModalLabel">Logout</h1>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div class="modal-body">
+              <div class="mb-3">Are you sure you want to logout?</div>
+            </div>
+            <form
+              id="logoutForm"
+              action="includes/logout.inc.php"
+              method="post"
+            >
+              <div class="modal-footer">
+                <button
+                  type="button"
+                  class="button button-secondary"
+                  data-bs-dismiss="modal"
+                >
+                  Close
+                </button>
+                <button
+                  id="logoutButton"
+                  type="submit"
+                  name="submit"
+                  class="button button-primary"
+                >
+                  <i class="bi bi-box-arrow-right"></i>Logout
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
       <h1>Create a New Task</h1>
       <div>
         <form action="includes/create-task.inc.php?created_by=1&type=department&department=1" method="post">
