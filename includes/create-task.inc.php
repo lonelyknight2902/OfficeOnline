@@ -6,7 +6,7 @@ if (isset($_POST['submit'])) {
   $priority = $_POST['priority'];
   $description = $_POST['description'];
   $assignee = $_POST['assignee'];
-  $created_by = $_Post['createdBy'];
+  $created_by = $_POST['createdBy'];
   $type = $_POST['type'];
   $department = $_POST['department'];
 

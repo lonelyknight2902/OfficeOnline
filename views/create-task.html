@@ -224,7 +224,7 @@ if($type == 'department') {
           </div>
           <input type="hidden" name="type" value="<?php echo $type; ?>" />
           <input type="hidden" name="createdBy" value="<?php echo $data['id']; ?>" />
-          <input type="hidden" name="department" value="<?php echo $type=='deparment'? $data['department'] : null; ?>" />\
+          <input type="hidden" name="department" value="<?php echo $type=='deparment'? $data['department'] : null; ?>" />
           <div class="d-flex gap-3 justify-content-end">
             <button class="button button-secondary">Cancel</button>
             <button type="submit" name="submit" class="button button-primary">Create</button>
