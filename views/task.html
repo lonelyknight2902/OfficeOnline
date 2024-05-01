@@ -356,8 +356,13 @@ unserialize($_COOKIE['user']); } else { header('Location:
         </div>
         <div class="task-info">
           <div><i class="bi bi-person-lines-fill"></i> Assigned to:</div>
-          <div class="assignee">
-            <img src="assets/blank-profile.webp" alt="" />
+          <div class="assignee d-flex gap-2">
+            <?php foreach($task['users'] as $user): ?>
+            <div class="d-flex gap-1 align-items-center">
+              <img src="assets/blank-profile.webp" alt="" />
+              <div><?php echo $user['name'] ?></div>
+            </div>
+            <?php endforeach; ?>
             <!-- <div><?php echo $task[''] ?></div> -->
           </div>
         </div>
