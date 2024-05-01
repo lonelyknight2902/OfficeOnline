@@ -179,6 +179,9 @@ class Tasks extends Dbh
 
   protected function setTask($name, $deadline, $priority, $description, $assignee, $created_by, $type, $department)
   {
+    if ($department == "null") {
+      $department = null;
+    }
     $sql = "INSERT INTO tasks (name, description, createdBy, deadline, status, priority, type, department) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
     $dbh = $this->connect();
     $stmt = $dbh->prepare($sql);
