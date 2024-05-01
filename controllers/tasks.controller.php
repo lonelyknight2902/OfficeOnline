@@ -19,7 +19,11 @@ class TaskController extends Tasks
 
   public function getAllTasksByDepartment($department)
   {
-    return $this->getTasksByDepartment($department);
+    if($department == 0) {
+      return $this->getTasksByCompany();
+    } else {
+      return $this->getTasksByDepartment($department);
+    }
   }
 
   public function getATask($id)

@@ -10,6 +10,39 @@ class Tasks extends Dbh
     return $results;
   }
 
+  protected function getTasksByCompany() {
+    $sql = "SELECT t.id, t.name, t.description, t.deadline, t.status, t.priority, t.type, t.department, u.id userId, u.name userName  FROM tasks t LEFT JOIN tasks_users tu ON t.id = tu.Tasks_id LEFT JOIN users u ON tu.Users_id = u.id WHERE t.type = 'company' ORDER BY t.id, u.id";
+    $stmt = $this->connect()->prepare($sql);
+    $stmt->execute();
+    $results = $stmt->fetchAll();
+    $tasks = [];
+    $currentTaskId = null;
+    foreach ($results as $result) {
+      $taskId = $result['id'];
+      if ($taskId !== $currentTaskId) {
+        $tasks[$taskId] = [
+          'id' => $result['id'],
+          'name' => $result['name'],
+          'description' => $result['description'],
+          'deadline' => $result['deadline'],
+          'status' => $result['status'],
+          'priority' => $result['priority'],
+          'type' => $result['type'],
+          'department' => $result['department'],
+          'users' => []
+        ];
+        $currentTaskId = $taskId;
+      }
+      if ($result['userId'] !== null) {
+        $tasks[$currentTaskId]['users'][] = [
+          'id' => $result['userId'],
+          'name' => $result['userName']
+        ];
+      }
+    }
+    return $tasks;
+  }
+
   protected function getTasksByDepartment($department)
   {
     $sql = "SELECT t.id, t.name, t.description, t.deadline, t.status, t.priority, t.type, t.department, u.id userId, u.name userName  FROM tasks t LEFT JOIN tasks_users tu ON t.id = tu.Tasks_id LEFT JOIN users u ON tu.Users_id = u.id WHERE t.department = ? AND t.type = 'department' ORDER BY t.id, u.id";
