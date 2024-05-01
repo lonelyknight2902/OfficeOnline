@@ -34,7 +34,7 @@ class Tasks extends Dbh
         ];
         $currentTaskId = $taskId;
       }
-      if($result['userId'] !== null){
+      if ($result['userId'] !== null) {
         $tasks[$currentTaskId]['users'][] = [
           'id' => $result['userId'],
           'name' => $result['userName']
@@ -73,7 +73,7 @@ class Tasks extends Dbh
         ];
         $currentTaskId = $taskId;
       }
-      if($taskInfo['userId'] !== null){
+      if ($taskInfo['userId'] !== null) {
         $task['users'][] = [
           'id' => $taskInfo['userId'],
           'name' => $taskInfo['userName']
@@ -87,19 +87,49 @@ class Tasks extends Dbh
 
   protected function getSubmissions($id)
   {
-    $sql = "SELECT s.id, s.detail, s.createdAt, u.id userId, u.name userName FROM submissions s JOIN users u ON s.createdBy = u.id WHERE taskId = ?";
+    $sql = "SELECT s.id, s.detail, s.createdAt, u.id userId, u.name userName, f.name fileName, f.path filePath FROM submissions s LEFT JOIN users u ON s.createdBy = u.id LEFT JOIN files f ON f.submissionId = s.id WHERE s.taskId = ? ORDER BY s.createdAt DESC";
     $stmt = $this->connect()->prepare($sql);
     $stmt->execute([$id]);
-    $submissions = $stmt->fetchAll();
+    $results = $stmt->fetchAll();
+    $submissions = [];
+    $currentSubmissionId = null;
+    foreach ($results as $submissionInfo) {
+      $submissionId = $submissionInfo['id'];
+      if ($submissionId !== $currentSubmissionId) {
+        $submissions[$submissionId] = [
+          'id' => $submissionInfo['id'],
+          'detail' => $submissionInfo['detail'],
+          'createdAt' => $submissionInfo['createdAt'],
+          'files' => [],
+          'userId' => $submissionInfo['userId'],
+          'userName' => $submissionInfo['userName'],
+        ];
+        $currentSubmissionId = $submissionId;
+      }
+      $submissions[$currentSubmissionId]['files'][] = [
+        'name' => $submissionInfo['fileName'],
+        'path' => $submissionInfo['filePath']
+      ];
+    }
     return $submissions;
   }
 
   protected function submitTask($id, $detail, $files, $userId)
   {
     $sql = "INSERT INTO submissions (taskId, detail, createdBy) VALUES (?, ?, ?)";
-    $stmt = $this->connect()->prepare($sql);
+    $dbh = $this->connect();
+    $stmt = $dbh->prepare($sql);
     $stmt->execute([$id, $detail, $userId]);
     $this->editTaskStatus($id, "Reviewing");
+    if (count($files) === 0) {
+      return;
+    }
+    $submissionId = $dbh->lastInsertId();
+    foreach ($files as $file) {
+      $sql = "INSERT INTO files (taskId, submissionId, name, path) VALUES (?, ?, ?, ?)";
+      $stmt = $this->connect()->prepare($sql);
+      $stmt->execute([$id, $submissionId, $file["name"], $file["path"]]);
+    }
     // if(!$files){
     //   return;
     // }

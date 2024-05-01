@@ -374,7 +374,7 @@ unserialize($_COOKIE['user']); } else { header('Location:
       </div>
       <div class="submissions d-flex flex-column gap-2">
         <h2>Submission</h2>
-        <?php if($task['status'] == 'In Progress' && in_array($data['id'], array_column($task['users'], "id"))) { ?>
+        <?php if(($task['status'] == 'In Progress' || $task['status'] == 'Rejected') && in_array($data['id'], array_column($task['users'], "id"))) { ?>
         <div>
           <button
             type="button"
@@ -409,6 +409,7 @@ unserialize($_COOKIE['user']); } else { header('Location:
                   id="submitForm"
                   action="includes/submit-task.inc.php"
                   method="post"
+                  enctype="multipart/form-data"
                 >
                   <div class="modal-body">
                     <div class="mb-3">
@@ -421,17 +422,20 @@ unserialize($_COOKIE['user']); } else { header('Location:
                       ></textarea>
                     </div>
                     <div class="mb-3">
-                      <label for="files" class="form-label"
-                        >Files</label
-                      >
+                      <label for="files" class="form-label">Files</label>
                       <input
                         type="file"
                         class="form-control"
                         id="files"
-                        name="files"
-                        required
+                        name="files[]"
+                        multiple
                       />
                     </div>
+                    <input
+                      type="hidden"
+                      name="type"
+                      value="<?php echo $task['type'] ?>"
+                    />
                   </div>
                   <div class="modal-footer">
                     <button
@@ -503,6 +507,21 @@ unserialize($_COOKIE['user']); } else { header('Location:
                   <div class="mb-3">
                     <label for="detail" class="form-label">Detail</label>
                     <p><?php echo $submission['detail'] ?></p>
+                  </div>
+                  <div class="mb-3">
+                    <label for="files" class="form-label">Files</label>
+                    <div class="files d-flex flex-column gap-1">
+                      <?php foreach($submission['files'] as $file): ?>
+                      <div>
+                        <?php if($file['name']): ?>
+                        <i class="bi bi-file-earmark"></i>
+                        <a href="<?php echo $file['path'] ?>" download
+                          ><?php echo $file['name'] ?></a
+                        >
+                        <?php endif; ?>
+                      </div>
+                      <?php endforeach; ?>
+                    </div>
                   </div>
                 </div>
                 <div class="modal-footer">

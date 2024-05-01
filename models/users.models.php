@@ -32,4 +32,25 @@ class Users extends Dbh
     $stmt = $this->connect()->prepare($sql);
     $stmt->execute([$username]);
   }
+
+  protected function getHeads()
+  {
+    $sql = "SELECT id FROM role WHERE name = 'Head'";
+    $stmt = $this->connect()->query($sql);
+    $head = $stmt->fetch();
+    $sql = "SELECT * FROM users WHERE role = ?";
+    $stmt = $this->connect()->prepare($sql);
+    $stmt->execute([$head['id']]);
+    $head = $stmt->fetchAll();
+    return $head;
+  }
+
+  protected function getUserFromDepartment($department)
+  {
+    $sql = "SELECT * FROM users WHERE department = ?";
+    $stmt = $this->connect()->prepare($sql);
+    $stmt->execute([$department]);
+    $users = $stmt->fetchAll();
+    return $users;
+  }
 }

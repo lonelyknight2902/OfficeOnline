@@ -6,4 +6,12 @@ class UserController extends Users
   {
     return $this->getUsers();
   }
+
+  function getAllUsersFromDepartment($department) {
+    if($department == 0) {
+      return $this->getHeads();
+    } else {
+      return $this->getUserFromDepartment($department);
+    }
+  }
 }

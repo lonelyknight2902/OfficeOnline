@@ -15,7 +15,12 @@ include "models/dbh.classes.php";
 include "models/users.models.php";
 include "controllers/users.controller.php";
 $usersController = new UserController();
-$users = $usersController->getAllUsers();
+$users = null;
+if($type == 'department') {
+  $users = $usersController->getAllUsersFromDepartment($data['department']);
+} else if($type == 'company') {
+  $users = $usersController->getAllUsersFromDepartment(0);
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
