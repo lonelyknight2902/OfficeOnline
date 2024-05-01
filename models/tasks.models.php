@@ -12,7 +12,7 @@ class Tasks extends Dbh
 
   protected function getTasksByDepartment($department)
   {
-    $sql = "SELECT t.id, t.name, t.description, t.deadline, t.status, t.priority, t.type, t.department, u.id userId, u.name userName  FROM tasks t LEFT JOIN tasks_users tu ON t.id = tu.Tasks_id LEFT JOIN users u ON tu.Users_id = u.id WHERE t.department = ? ORDER BY t.id, u.id";
+    $sql = "SELECT t.id, t.name, t.description, t.deadline, t.status, t.priority, t.type, t.department, u.id userId, u.name userName  FROM tasks t LEFT JOIN tasks_users tu ON t.id = tu.Tasks_id LEFT JOIN users u ON tu.Users_id = u.id WHERE t.department = ? AND t.type = 'department' ORDER BY t.id, u.id";
     $stmt = $this->connect()->prepare($sql);
     $stmt->execute([$department]);
     $results = $stmt->fetchAll();

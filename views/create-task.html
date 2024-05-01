@@ -179,7 +179,7 @@ if($type == 'department') {
       </div>
       <h1>Create a New Task</h1>
       <div>
-        <form action="includes/create-task.inc.php?created_by=1&type=department&department=1" method="post">
+        <form action="includes/create-task.inc.php" method="post">
           <div class="mb-3">
             <label for="name" class="form-label">Task Name</label>
             <input
@@ -223,6 +223,8 @@ if($type == 'department') {
             <textarea name="description" class="form-control" id="description"></textarea>
           </div>
           <input type="hidden" name="type" value="<?php echo $type; ?>" />
+          <input type="hidden" name="createdBy" value="<?php echo $data['id']; ?>" />
+          <input type="hidden" name="department" value="<?php echo $data['department']; ?>" />\
           <div class="d-flex gap-3 justify-content-end">
             <button class="button button-secondary">Cancel</button>
             <button type="submit" name="submit" class="button button-primary">Create</button>

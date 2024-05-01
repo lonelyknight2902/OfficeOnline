@@ -6,9 +6,9 @@ if (isset($_POST['submit'])) {
   $priority = $_POST['priority'];
   $description = $_POST['description'];
   $assignee = $_POST['assignee'];
-  $created_by = $_GET['created_by'];
-  $type = $_GET['type'];
-  $department = $_GET['department'];
+  $created_by = $_Post['createdBy'];
+  $type = $_POST['type'];
+  $department = $_POST['department'];
 
   require_once '../models/dbh.classes.php';
   require_once '../models/tasks.models.php';
