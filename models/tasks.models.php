@@ -179,13 +179,16 @@ class Tasks extends Dbh
 
   protected function setTask($name, $deadline, $priority, $description, $assignee, $created_by, $type, $department)
   {
-    if ($department == "null") {
-      $department = null;
-    }
-    $sql = "INSERT INTO tasks (name, description, createdBy, deadline, status, priority, type, department) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
     $dbh = $this->connect();
-    $stmt = $dbh->prepare($sql);
-    $stmt->execute([$name, $description, $created_by, $deadline, "Todo", $priority, $type, $department]);
+    if ($department == "null") {
+      $sql = "INSERT INTO tasks (name, description, createdBy, deadline, status, priority, type) VALUES (?, ?, ?, ?, ?, ?, ?)";
+      $stmt = $dbh->prepare($sql);
+      $stmt->execute([$name, $description, $created_by, $deadline, "Todo", $priority, $type]);
+    } else {
+      $sql = "INSERT INTO tasks (name, description, createdBy, deadline, status, priority, type, department) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+      $stmt = $dbh->prepare($sql);
+      $stmt->execute([$name, $description, $created_by, $deadline, "Todo", $priority, $type, $department]);
+    }
     $id = $dbh->lastInsertId();
     $sql = "INSERT INTO tasks_users (Tasks_id, Users_id) VALUES (?, ?)";
     $stmt = $this->connect()->prepare($sql);
