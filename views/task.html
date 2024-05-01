@@ -545,7 +545,45 @@ unserialize($_COOKIE['user']); } else { header('Location:
           ?>
         </div>
       </div>
-      <div></div>
+      <div>
+        <h2>Comments</h2>
+        <div>
+          <?php foreach($task['comments'] as $comment): ?>
+          <div class="comment mb-3">
+            <div class="comment-user">
+              <img src="assets/blank-profile.webp" alt="" />
+            </div>
+            <div class="comment-content">
+              <div class="comment-username"><?php echo $comment['userName'] ?></div>
+              <p><?php echo $comment['content'] ?></p>
+            </div>
+          </div>
+          <?php endforeach; ?>
+        </div>
+        <div>
+          <form
+            id="commentForm"
+            action="includes/comment-task.inc.php"
+            method="post"
+          >
+            <div class="mb-3">
+              <textarea
+                class="form-control"
+                id="comment"
+                name="comment"
+                required
+              ></textarea>
+            </div>
+            <input type="hidden" name="taskId" value="<?php echo $task['id'] ?>" />
+            <input type="hidden" name="userId" value="<?php echo $data['id'] ?>" />
+            <div class="d-flex justify-content-end">
+              <button type="submit" name="submit" class="button button-primary">
+                <i class="bi bi-chat
+                  "></i>Comment
+              </button>
+            </div>
+          </form>
+      </div>
     </div>
     <script
       src="https://code.jquery.com/jquery-3.2.1.min.js"

@@ -29,6 +29,8 @@ class Tasks extends Dbh
           'priority' => $result['priority'],
           'type' => $result['type'],
           'department' => $result['department'],
+          'submissions' => $this->getNumberOfSubmissions($result['id']),
+          'comments' => $this->getNumberOfComments($result['id']),
           'users' => []
         ];
         $currentTaskId = $taskId;
@@ -63,6 +65,8 @@ class Tasks extends Dbh
           'priority' => $result['priority'],
           'type' => $result['type'],
           'department' => $result['department'],
+          'submissions' => $this->getNumberOfSubmissions($result['id']),
+          'comments' => $this->getNumberOfComments($result['id']),
           'users' => []
         ];
         $currentTaskId = $taskId;
@@ -114,6 +118,7 @@ class Tasks extends Dbh
       }
     }
     $task['submissions'] = $this->getSubmissions($id);
+    $task['comments'] = $this->getComments($id);
 
     return $task;
   }
@@ -145,6 +150,40 @@ class Tasks extends Dbh
       ];
     }
     return $submissions;
+  }
+
+  protected function getNumberOfSubmissions($id)
+  {
+    $sql = "SELECT COUNT(*) number FROM submissions WHERE taskId = ?";
+    $stmt = $this->connect()->prepare($sql);
+    $stmt->execute([$id]);
+    $result = $stmt->fetch();
+    return $result['number'];
+  }
+
+  protected function getNumberOfComments($id)
+  {
+    $sql = "SELECT COUNT(*) number FROM comments WHERE taskId = ?";
+    $stmt = $this->connect()->prepare($sql);
+    $stmt->execute([$id]);
+    $result = $stmt->fetch();
+    return $result['number'];
+  }
+
+  protected function getComments($id)
+  {
+    $sql = "SELECT c.id, c.content, c.commentedAt, u.id userId, u.name userName FROM comments c LEFT JOIN users u ON c.commentedBy = u.id WHERE c.taskId = ? ORDER BY c.commentedAt ASC";
+    $stmt = $this->connect()->prepare($sql);
+    $stmt->execute([$id]);
+    $results = $stmt->fetchAll();
+    return $results;
+  }
+
+  protected function submitComment($id, $content, $userId)
+  {
+    $sql = "INSERT INTO comments (taskId, content, commentedBy) VALUES (?, ?, ?)";
+    $stmt = $this->connect()->prepare($sql);
+    $stmt->execute([$id, $content, $userId]);
   }
 
   protected function submitTask($id, $detail, $files, $userId)

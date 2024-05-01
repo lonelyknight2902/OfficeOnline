@@ -49,6 +49,11 @@ class TaskController extends Tasks
     }
   }
 
+  public function submitAComment($id, $content, $userId)
+  {
+    $this->submitComment($id, $content, $userId);
+  }
+
   public function getNumberOfTasksOfAUser($userId)
   {
     return $this->getNumberOfTasksOfUser($userId);

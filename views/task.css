@@ -50,3 +50,34 @@
 .submission-title {
   font-size: 1.5rem;
 }
+
+.comment {
+  display: flex;
+  gap: 1rem;
+}
+
+.comment-user img {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.comment-content {
+  background-color: #e0e0e0;
+  width: fit-content;
+  padding: 10px 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 0.2rem;
+  border-radius: 0.5rem;
+}
+
+.comment-content p {
+  margin: 0;
+}
+
+.comment-username {
+  font-weight: 600;
+}
