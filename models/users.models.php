@@ -35,7 +35,7 @@ class Users extends Dbh
 
   protected function getHeads()
   {
-    $sql = "SELECT id FROM role WHERE name = 'Head'";
+    $sql = "SELECT id FROM roles WHERE name = 'Head'";
     $stmt = $this->connect()->query($sql);
     $head = $stmt->fetch();
     $sql = "SELECT * FROM users WHERE role = ?";
