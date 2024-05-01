@@ -222,6 +222,7 @@ if($type == 'department') {
             <label for="email" class="form-label">Description</label>
             <textarea name="description" class="form-control" id="description"></textarea>
           </div>
+          <input type="hidden" name="type" value="<?php echo $type; ?>" />
           <div class="d-flex gap-3 justify-content-end">
             <button class="button button-secondary">Cancel</button>
             <button type="submit" name="submit" class="button button-primary">Create</button>
