@@ -170,7 +170,7 @@ isTaskOverdue($deadline) { return strtotime($deadline) < time(); } ?>
         </div>
       </div>
       <h1>Tasks Management</h1>
-      <?php if (!((in_array('Create Department Tasks', array_column($data['permissions'], "name")) && $type == 'department') || (in_array('Create Company Tasks', array_column($data['permissions'], "name")) && $type == 'company'))){ ?>
+      <?php if (((in_array('Create Department Tasks', array_column($data['permissions'], "name")) && $type == 'department') || (in_array('Create Company Tasks', array_column($data['permissions'], "name")) && $type == 'company'))){ ?>
       <div>
         <button id="create-task" class="button button-primary">
           <div><i class="bi bi-plus-lg"></i></div>
