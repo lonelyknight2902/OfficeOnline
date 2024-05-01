@@ -210,6 +210,7 @@ $taskController->getNumberOfTasks($data['department']); ?>
           </a>
         </div>
         <?php endif; ?>
+        <?php if (in_array('View Department Tasks', array_column($data['permissions'], "name"))): ?>
         <div class="department-card">
           <a href="/index.php?page=tasks&type=department">
             <h2 class="department-title">Department Tasks</h2>
@@ -260,6 +261,7 @@ $taskController->getNumberOfTasks($data['department']); ?>
             </div>
           </a>
         </div>
+        <?php endif; ?>
       </div>
     </div>
   </body>
