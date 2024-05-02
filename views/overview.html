@@ -167,7 +167,7 @@ $userTasks = $taskController->getNumberOfTasksOfAUser($data['id']); ?>
               <?php if ($userTasks && $userTasks[0]['status'] == 'Todo') {echo $userTasks[0]['number'];} else {echo 0;}  ?>
               tasks to do.
             </p>
-            <a href="/index.php?page=task-menu">
+            <a style="text-decoration: none;" href="/index.php?page=task-menu">
               <button class="button button-primary">View Tasks</button>
             </a>
           </div>
